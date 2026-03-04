@@ -13,14 +13,6 @@
                     colors: {
                         brand: { 50: '#f0f7ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' },
                         pay: { 500: '#10b981', 600: '#059669' }
-                    },
-                    animation: {
-                        'slide-up': 'slideUp 0.3s ease-out forwards',
-                        'fade-in': 'fadeIn 0.2s ease-out forwards'
-                    },
-                    keyframes: {
-                        slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } }
                     }
                 }
             }
@@ -44,19 +36,21 @@
         .hide-scroll::-webkit-scrollbar { width: 0px; height: 0px; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 強化版按鈕回饋模式 */
+        /* 強化版外框回饋模式 */
         .btn-active { 
-            transition: all 0.05s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: all 0.05s ease; 
             cursor: pointer;
             touch-action: manipulation;
+            outline: none;
+            border: 2px solid transparent;
         }
         .btn-active:active { 
-            transform: scale(0.92); 
-            filter: brightness(0.85);
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.15);
+            transform: scale(0.96); 
+            border-color: #3b82f6; /* 按下時出現明顯外框 */
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3); /* 外發光效果 */
         }
         
-        /* 底部面板：修復移動端顯示與點擊穿透問題 */
+        /* 底部面板：修復移動端顯示與點擊問題 */
         .bottom-sheet {
             position: absolute; bottom: 0; left: 0; right: 0; 
             height: 80%; 
@@ -64,18 +58,19 @@
             border-radius: 2.5rem 2.5rem 0 0;
             box-shadow: 0 -15px 50px rgba(0,0,0,0.4);
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 100; /* 確保在主畫面之上 */
+            z-index: 100; /* 確保在最頂層 */
             display: flex; flex-direction: column;
-            /* 調整收起位置，確保按鈕在各種手機底部導覽列上方 */
-            transform: translateY(calc(100% - 280px)); 
+            /* 收起位置，針對手機網頁優化 */
+            transform: translateY(calc(100% - 275px)); 
             padding-bottom: env(safe-area-inset-bottom, 20px);
             will-change: transform;
+            pointer-events: auto;
         }
         
         .bottom-sheet.expanded { 
             transform: translateY(0); 
             background: white;
-            z-index: 100; 
+            border-radius: 2rem 2rem 0 0;
         }
         
         .bottom-sheet.expanded .sheet-header { display: none; }
@@ -89,7 +84,7 @@
             background-color: #dbeafe !important; 
         }
 
-        /* 文字顏色動態切換 */
+        /* 文字配色動態切換 */
         .bottom-sheet .total-text { color: #34d399; } 
         .bottom-sheet.expanded .total-text { color: #1e293b; }
         .bottom-sheet .sub-label { color: #94a3b8; } 
@@ -103,7 +98,7 @@
         }
         .toast.show { opacity: 1; top: 40px; }
 
-        /* 面板開啟時的背景遮罩 */
+        /* 背景遮罩 */
         .sheet-overlay { 
             position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); 
             z-index: 90; opacity: 0; 
@@ -114,7 +109,7 @@
         /* 模態框樣式 */
         .modal-overlay { 
             position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); 
-            backdrop-filter: blur(8px); z-index: 150; opacity: 0; 
+            z-index: 150; opacity: 0; 
             pointer-events: none; transition: opacity 0.3s; 
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
@@ -146,7 +141,7 @@
             <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center font-black text-sm italic shadow-lg shadow-brand-500/20">KS</div>
             <div class="flex flex-col">
                 <span class="text-xs font-black tracking-tight leading-none uppercase">中山旗艦店</span>
-                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | v1.30</span>
+                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | v1.31</span>
             </div>
         </div>
         <div class="flex flex-col items-end">
@@ -249,7 +244,7 @@
     <div id="sheetOverlay" class="sheet-overlay" onclick="expandSheet(false)"></div>
     
     <div id="bottomSheet" class="bottom-sheet">
-        <!-- 面板頁首 (收起狀態) -->
+        <!-- 面板頁首 (收起狀態：三行式資訊) -->
         <div class="sheet-header px-8 pt-5 pb-6 shrink-0 cursor-pointer" onclick="expandSheet()">
             <div class="handle w-16 h-1.5 rounded-full mx-auto mb-5 shadow-inner transition-colors"></div>
             
@@ -299,8 +294,8 @@
                 <button onclick="switchTab('more')" id="tab-more" class="flex-1 py-3 text-sm font-black text-slate-500">更多功能</button>
             </div>
 
-            <!-- 數字鍵盤內容 -->
-            <div id="content-numpad" class="flex-1 grid grid-cols-4 gap-3 overflow-visible pb-4">
+            <!-- 數字鍵盤內容 (提升互動權限) -->
+            <div id="content-numpad" class="flex-1 grid grid-cols-4 gap-3 overflow-visible pb-4 relative z-[110]">
                 <div class="col-span-3 grid grid-cols-3 gap-3">
                     <button onclick="pressBarcodeKey('7')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">7</button>
                     <button onclick="pressBarcodeKey('8')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">8</button>
@@ -326,7 +321,7 @@
             </div>
 
             <!-- 快捷商品 -->
-            <div id="content-quick" class="hidden grid grid-cols-3 grid-rows-2 gap-4 flex-1 pb-4">
+            <div id="content-quick" class="hidden grid grid-cols-3 grid-rows-2 gap-4 flex-1 pb-4 relative z-[110]">
                 <button class="bg-slate-50 border border-slate-200 rounded-[1.25rem] p-3 flex flex-col items-center justify-center btn-active shadow-sm">
                     <span class="w-10 h-10 rounded-full bg-orange-100 text-orange-400 flex items-center justify-center text-lg mb-1"><i class="fa-solid fa-egg"></i></span>
                     <span class="text-[10px] font-black text-slate-800 text-center">茶葉蛋</span>
@@ -373,13 +368,13 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-5">
-                <button onclick="openCashPayment()" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active hover:border-pay-500 transition-all shadow-sm">
+                <button onclick="openCashPayment()" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm">
                     <div class="w-16 h-16 rounded-full bg-pay-50 text-pay-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-money-bill-wave"></i></div>
-                    <span class="font-black text-slate-800 text-lg uppercase tracking-widest text-center">現金</span>
+                    <span class="font-black text-slate-800 text-lg uppercase tracking-widest text-center mt-2">現金</span>
                 </button>
-                <button onclick="selectPayment('信用卡')" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active hover:border-brand-500 transition-all shadow-sm">
+                <button onclick="selectPayment('信用卡')" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm">
                     <div class="w-16 h-16 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-credit-card"></i></div>
-                    <span class="font-black text-slate-800 text-lg uppercase tracking-widest text-center">刷卡</span>
+                    <span class="font-black text-slate-800 text-lg uppercase tracking-widest text-center mt-2">刷卡</span>
                 </button>
             </div>
         </div>
@@ -428,7 +423,7 @@
                 <button onclick="pressCashKey('3')" class="h-16 bg-slate-100 rounded-[1.5rem] font-black text-2xl text-slate-800 btn-active">3</button>
                 <button onclick="pressCashKey('0')" class="h-16 bg-slate-100 rounded-[1.5rem] font-black text-2xl text-slate-800 btn-active">0</button>
                 <button onclick="pressCashKey('00')" class="h-16 bg-slate-100 rounded-[1.5rem] font-black text-2xl text-slate-800 btn-active leading-none">00</button>
-                <button onclick="clearCashInput()" class="h-16 bg-slate-300 rounded-[1.5rem] font-black text-sm text-slate-900 btn-active uppercase tracking-tighter">清除</button>
+                <button onclick="clearCashInput()" class="h-16 bg-slate-300 rounded-[1.5rem] font-black text-sm text-slate-900 btn-active uppercase">清除</button>
             </div>
         </div>
         <div class="p-8 border-t border-slate-100 bg-slate-50">
@@ -486,19 +481,17 @@
         if(expand) {
             sheet.classList.add('expanded');
             sheetOverlay.classList.add('active');
-            // 強制重繪以修復移動端渲染問題
-            sheet.style.display = 'none';
-            sheet.offsetHeight; 
-            sheet.style.display = 'flex';
+            // 修復渲染與點擊失效
+            sheet.style.zIndex = "120";
         } else {
             sheet.classList.remove('expanded');
             sheetOverlay.classList.remove('active');
+            sheet.style.zIndex = "100";
         }
     }
 
     function pressBarcodeKey(key) {
         barcodeInputField.value += key;
-        // 如果未展開則自動展開
         if(!isExpanded) expandSheet(true);
     }
     function clearBarcode() {
