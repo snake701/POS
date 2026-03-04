@@ -45,8 +45,9 @@
             -webkit-user-select: none;
             outline: none;
             border: 2px solid transparent;
-            border-radius: 1.25rem;
+            border-radius: 1.25rem !important;
         }
+        /* 點選時的回饋狀態 - 確保所有分頁按鈕一致 */
         .btn-active:active { 
             transform: scale(0.94) !important; 
             background-color: #ffffff !important; 
@@ -54,14 +55,14 @@
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4) !important;
         }
         
-        /* 深色按鈕特別設定 */
+        /* 深色背景按鈕點選時增加亮度回饋 */
         .bg-brand-600.btn-active:active, 
         .bg-pay-500.btn-active:active {
-            background-color: #1e3a8a !important;
             filter: brightness(1.2); 
             border-color: #3b82f6 !important;
         }
         
+        /* 底部面板設定 */
         .bottom-sheet {
             position: absolute; bottom: 0; left: 0; right: 0; 
             height: 80%; 
@@ -85,16 +86,20 @@
         
         .bottom-sheet.expanded .sheet-header { display: none; }
         
-        #cart-list .cart-row:nth-child(odd) { background-color: #ffffff; }
-        #cart-list .cart-row:nth-child(even) { background-color: #f3f4f6; }
+        .cart-row:nth-child(odd) { background-color: #ffffff; }
+        .cart-row:nth-child(even) { background-color: #f3f4f6; }
         .cart-row { transition: background 0.2s; border-left: 6px solid transparent; }
         .cart-row.selected { 
             border-left-color: #3b82f6 !important; 
             background-color: #dbeafe !important; 
         }
 
-        .bottom-sheet .total-text { color: #34d399; } 
-        .bottom-sheet.expanded .total-text { color: #1e293b; }
+        /* 提示視窗修復：初始隱藏 */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 300;
+            pointer-events: none; opacity: 0; transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        .toast.show { opacity: 1; top: 40px; }
 
         .modal-overlay { 
             position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); 
@@ -116,6 +121,7 @@
 <body ontouchstart="">
 
 <div id="main-container" class="pos-app-container">
+    <!-- 提示訊息：確保初始無 show class -->
     <div id="toast" class="toast">
         <div class="bg-slate-800 text-white px-8 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-slate-600">
             <i id="toast-icon" class="fa-solid fa-circle-check text-pay-500"></i>
@@ -123,13 +129,13 @@
         </div>
     </div>
 
-    <!-- 頁首：版本號 V1.7 -->
+    <!-- 頁首：版本號 V1.8 -->
     <header class="h-16 bg-slate-900 text-white flex items-center justify-between px-6 shrink-0 z-10 pt-2 shadow-lg">
         <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center font-black text-sm italic shadow-lg shadow-brand-500/20 active:scale-90 transition-transform">KS</div>
             <div class="flex flex-col">
                 <span class="text-xs font-black tracking-tight leading-none uppercase">中山旗艦店</span>
-                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version">V1.7</span></span>
+                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version">V1.8</span></span>
             </div>
         </div>
         <div class="flex flex-col items-end">
@@ -227,7 +233,7 @@
                     <span class="sub-label text-[10px] font-black uppercase tracking-widest transition-colors">件商品</span>
                 </div>
                 <div class="flex flex-col items-end leading-tight">
-                    <span class="text-white text-[8px] font-black uppercase tracking-widest opacity-60">原始金額</span>
+                    <span class="text-white text-[9px] font-black uppercase tracking-widest opacity-60">原始金額</span>
                     <span id="sheet-gross" class="text-white text-xl font-black transition-colors">$ 300</span>
                 </div>
             </div>
@@ -272,7 +278,7 @@
                     <button onclick="pressBarcodeKey('8')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">8</button>
                     <button onclick="pressBarcodeKey('9')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">9</button>
                     <button onclick="pressBarcodeKey('4')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">4</button>
-                    <button onclick="pressBarcodeKey('5')" class="bg-slate-50 rounded-[1.25rem) shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">5</button>
+                    <button onclick="pressBarcodeKey('5')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">5</button>
                     <button onclick="pressBarcodeKey('6')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">6</button>
                     <button onclick="pressBarcodeKey('1')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">1</button>
                     <button onclick="pressBarcodeKey('2')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">2</button>
@@ -283,15 +289,15 @@
                 </div>
                 <div class="flex flex-col gap-3">
                     <button onclick="showToast('已加入載具')" class="flex-1 bg-sky-50 text-sky-600 border-2 border-sky-100 rounded-[1.25rem] flex flex-col items-center justify-center gap-1 btn-active shadow-sm">
-                        <i class="fa-solid fa-mobile-screen text-xl"></i><span class="text-[9px] font-black uppercase">載具</span>
+                        <i class="fa-solid fa-mobile-screen text-xl"></i><span class="text-[9px] font-black uppercase tracking-widest">載具</span>
                     </button>
                     <button onclick="addBarcodeToCart()" class="flex-1 bg-brand-600 text-white rounded-[1.25rem] flex items-center justify-center btn-active shadow-xl shadow-brand-500/40 border-b-4 border-brand-800">
-                        <span class="font-black text-lg tracking-widest">輸入</span>
+                        <span class="font-black text-lg tracking-widest uppercase">輸入</span>
                     </button>
                 </div>
             </div>
 
-            <!-- 快捷商品 -->
+            <!-- 快捷商品：統一圓角樣式與回饋 -->
             <div id="content-quick" class="hidden flex flex-col gap-4 flex-1 pb-4 relative z-[130] overflow-hidden">
                 <div class="relative shrink-0" onclick="openModal('searchProductModal')">
                     <input type="text" readonly placeholder="搜尋商品名稱或貨號..." class="w-full bg-slate-50 h-12 rounded-xl border-2 border-slate-100 px-10 text-sm font-bold text-slate-400 outline-none shadow-sm cursor-pointer hover:border-brand-500 transition-colors">
@@ -325,7 +331,7 @@
                 </div>
             </div>
 
-            <!-- 更多功能 -->
+            <!-- 更多功能：統一樣式 -->
             <div id="content-more" class="hidden flex-1 grid grid-cols-3 gap-3 overflow-visible pb-4 relative z-[130]">
                 <button class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                     <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-receipt"></i></div>
@@ -343,7 +349,7 @@
         </div>
     </div>
 
-    <!-- 各種 Modals (搜尋、折扣、會員、付款) -->
+    <!-- Modals -->
     <div id="searchProductModalOverlay" class="modal-overlay" onclick="closeModal('searchProductModal')"></div>
     <div id="searchProductModalDrawer" class="modal-drawer">
         <div class="p-6 flex flex-col gap-6 h-full">
@@ -394,6 +400,89 @@
         </div>
     </div>
 
+    <!-- 現金收銀 Modal (精簡佈局優化) -->
+    <div id="cashPaymentOverlay" class="modal-overlay" onclick="closeModal('cashPayment')"></div>
+    <div id="cashPaymentDrawer" class="modal-drawer">
+        <div class="p-4 flex justify-between items-center border-b border-slate-100 shrink-0">
+            <button onclick="closeModal('cashPayment'); openModal('paymentModal')" class="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-chevron-left text-lg"></i></button>
+            <h3 class="font-black text-slate-900 text-lg uppercase">現金收銀</h3>
+            <button onclick="closeModal('cashPayment')" class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto px-6 py-3 space-y-3">
+            <!-- 資訊區佔比縮小 -->
+            <div class="flex justify-between items-center px-2">
+                <span class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">應付金額</span>
+                <span id="cash-modal-required" class="text-2xl font-black text-slate-900">$ 285</span>
+            </div>
+            
+            <div class="bg-slate-50 rounded-[1.5rem] p-4 border-2 border-slate-100 space-y-2 shadow-inner relative overflow-hidden">
+                <div class="flex justify-between items-center gap-2">
+                    <span class="text-brand-600 font-black text-xs uppercase shrink-0">實收現金</span>
+                    <div class="flex items-center gap-1 flex-1 justify-end min-w-0">
+                        <span class="text-lg font-black text-slate-300">$</span>
+                        <input id="cash-received-input" type="text" readonly class="bg-transparent text-3xl font-black text-brand-600 text-right w-full max-w-[140px] outline-none tracking-tighter" value="0">
+                    </div>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-slate-200">
+                    <span class="text-rose-500 font-black text-xs uppercase shrink-0">找零金額</span>
+                    <span id="cash-change-display" class="text-3xl font-black text-rose-500 tracking-tighter leading-none">$ 0</span>
+                </div>
+            </div>
+
+            <!-- 數字鍵盤 -->
+            <div class="grid grid-cols-3 gap-2 pb-2">
+                <button onclick="pressCashKey('7')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">7</button>
+                <button onclick="pressCashKey('8')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">8</button>
+                <button onclick="pressCashKey('9')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">9</button>
+                <button onclick="pressCashKey('4')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">4</button>
+                <button onclick="pressCashKey('5')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">5</button>
+                <button onclick="pressCashKey('6')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">6</button>
+                <button onclick="pressCashKey('1')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">1</button>
+                <button onclick="pressCashKey('2')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">2</button>
+                <button onclick="pressCashKey('3')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">3</button>
+                <button onclick="pressCashKey('0')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">0</button>
+                <button onclick="pressCashKey('00')" class="h-12 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active leading-none">00</button>
+                <button onclick="clearCashInput()" class="h-12 bg-slate-300 rounded-[1rem] font-black text-[10px] text-slate-900 btn-active uppercase">清除</button>
+            </div>
+        </div>
+        
+        <div class="p-4 border-t border-slate-100 bg-slate-50 shrink-0">
+            <button onclick="confirmPayment()" class="w-full bg-pay-500 text-white h-14 rounded-[1.25rem] font-black text-lg shadow-xl shadow-pay-500/30 btn-active flex items-center justify-center border-b-4 border-pay-700 transition-all uppercase">
+                付款 <i class="fa-solid fa-circle-check ml-3"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 付款選單 Modal -->
+    <div id="paymentModalOverlay" class="modal-overlay" onclick="closeModal('paymentModal')"></div>
+    <div id="paymentModalDrawer" class="modal-drawer">
+        <div class="p-6 flex justify-between items-center border-b border-slate-100 shrink-0">
+            <h3 class="font-black text-slate-900 text-xl tracking-tight uppercase">選擇付款方式</h3>
+            <button onclick="closeModal('paymentModal')" class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div class="flex-1 p-8 space-y-8 overflow-y-auto">
+            <div class="bg-slate-900 rounded-[2.5rem] p-10 text-white flex justify-between items-center shadow-2xl relative border border-white/5 shrink-0">
+                <div class="absolute -right-4 -top-4 w-32 h-32 bg-pay-500/10 rounded-full blur-3xl"></div>
+                <div class="flex flex-col relative z-10 text-left">
+                    <span class="text-[10px] text-slate-500 font-black mb-2 uppercase tracking-widest">應收總額 Total</span>
+                    <span id="pay-modal-total" class="text-6xl font-black text-pay-500 leading-none tracking-tighter">$ 285</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-5">
+                <button onclick="openCashPayment()" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm active:border-pay-500">
+                    <div class="w-16 h-16 rounded-full bg-pay-50 text-pay-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-money-bill-wave"></i></div>
+                    <span class="font-black text-slate-800 text-lg uppercase mt-2">現金</span>
+                </button>
+                <button onclick="selectPayment('信用卡')" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm active:border-brand-500">
+                    <div class="w-16 h-16 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-credit-card"></i></div>
+                    <span class="font-black text-slate-800 text-lg uppercase mt-2">刷卡</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 會員服務 Modal -->
     <div id="vipModalOverlay" class="modal-overlay" onclick="closeModal('vipModal')"></div>
     <div id="vipModalDrawer" class="modal-drawer">
         <div class="p-6 flex justify-between items-center border-b border-slate-100 shrink-0">
@@ -422,91 +511,10 @@
             </button>
         </div>
     </div>
-
-    <div id="paymentModalOverlay" class="modal-overlay" onclick="closeModal('paymentModal')"></div>
-    <div id="paymentModalDrawer" class="modal-drawer">
-        <div class="p-6 flex justify-between items-center border-b border-slate-100 shrink-0">
-            <h3 class="font-black text-slate-900 text-xl tracking-tight uppercase">選擇付款方式</h3>
-            <button onclick="closeModal('paymentModal')" class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-xmark text-xl"></i></button>
-        </div>
-        <div class="flex-1 p-8 space-y-8 overflow-y-auto">
-            <div class="bg-slate-900 rounded-[2.5rem] p-10 text-white flex justify-between items-center shadow-2xl relative border border-white/5 shrink-0">
-                <div class="absolute -right-4 -top-4 w-32 h-32 bg-pay-500/10 rounded-full blur-3xl"></div>
-                <div class="flex flex-col relative z-10 text-left">
-                    <span class="text-[10px] text-slate-500 font-black mb-2 uppercase">應收總額 Total</span>
-                    <span id="pay-modal-total" class="text-6xl font-black text-pay-500 leading-none tracking-tighter">$ 285</span>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-5">
-                <button onclick="openCashPayment()" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm active:border-pay-500">
-                    <div class="w-16 h-16 rounded-full bg-pay-50 text-pay-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-money-bill-wave"></i></div>
-                    <span class="font-black text-slate-800 text-lg uppercase mt-2">現金</span>
-                </button>
-                <button onclick="selectPayment('信用卡')" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm active:border-brand-500">
-                    <div class="w-16 h-16 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-credit-card"></i></div>
-                    <span class="font-black text-slate-800 text-lg uppercase mt-2">刷卡</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 現金收銀 Modal (佈局精簡優化版) -->
-    <div id="cashPaymentOverlay" class="modal-overlay" onclick="closeModal('cashPayment')"></div>
-    <div id="cashPaymentDrawer" class="modal-drawer">
-        <div class="p-4 flex justify-between items-center border-b border-slate-100 shrink-0">
-            <button onclick="closeModal('cashPayment'); openModal('paymentModal')" class="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-chevron-left text-lg"></i></button>
-            <h3 class="font-black text-slate-900 text-lg uppercase">現金收銀</h3>
-            <button onclick="closeModal('cashPayment')" class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-xmark text-xl"></i></button>
-        </div>
-        
-        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-            <!-- 資訊佔比縮小 -->
-            <div class="flex justify-between items-center px-2">
-                <span class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">應付金額</span>
-                <span id="cash-modal-required" class="text-2xl font-black text-slate-900">$ 285</span>
-            </div>
-            
-            <div class="bg-slate-50 rounded-[2rem] p-5 border-2 border-slate-100 space-y-3 shadow-inner relative overflow-hidden">
-                <div class="flex justify-between items-center gap-2">
-                    <span class="text-brand-600 font-black text-sm uppercase shrink-0">實收現金</span>
-                    <div class="flex items-center gap-1 flex-1 justify-end min-w-0">
-                        <span class="text-xl font-black text-slate-300">$</span>
-                        <input id="cash-received-input" type="text" readonly class="bg-transparent text-3xl font-black text-brand-600 text-right w-full max-w-[150px] outline-none tracking-tighter" value="0">
-                    </div>
-                </div>
-                <div class="flex justify-between items-center pt-3 border-t border-slate-200">
-                    <span class="text-rose-500 font-black text-sm uppercase shrink-0">找零金額</span>
-                    <span id="cash-change-display" class="text-3xl font-black text-rose-500 tracking-tighter leading-none">$ 0</span>
-                </div>
-            </div>
-
-            <!-- 數字鍵盤更顯眼 -->
-            <div class="grid grid-cols-3 gap-2 pb-4">
-                <button onclick="pressCashKey('7')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">7</button>
-                <button onclick="pressCashKey('8')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">8</button>
-                <button onclick="pressCashKey('9')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">9</button>
-                <button onclick="pressCashKey('4')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">4</button>
-                <button onclick="pressCashKey('5')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">5</button>
-                <button onclick="pressCashKey('6')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">6</button>
-                <button onclick="pressCashKey('1')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">1</button>
-                <button onclick="pressCashKey('2')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">2</button>
-                <button onclick="pressCashKey('3')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">3</button>
-                <button onclick="pressCashKey('0')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active">0</button>
-                <button onclick="pressCashKey('00')" class="h-14 bg-slate-100 rounded-[1rem] font-black text-xl text-slate-800 btn-active leading-none">00</button>
-                <button onclick="clearCashInput()" class="h-14 bg-slate-300 rounded-[1rem] font-black text-xs text-slate-900 btn-active uppercase">清除</button>
-            </div>
-        </div>
-        
-        <!-- 結帳按鈕縮小與更名 -->
-        <div class="p-6 border-t border-slate-100 bg-slate-50 shrink-0">
-            <button onclick="confirmPayment()" class="w-full bg-pay-500 text-white h-16 rounded-[1.5rem] font-black text-xl shadow-xl shadow-pay-500/30 btn-active flex items-center justify-center border-b-4 border-pay-700 transition-all uppercase">
-                付款 <i class="fa-solid fa-circle-check ml-3"></i>
-            </button>
-        </div>
-    </div>
 </div>
 
 <script>
+    // 即時時間
     setInterval(() => {
         const now = new Date();
         document.getElementById('header-time').innerText = now.toLocaleTimeString('en-GB', { hour12: false });
@@ -568,7 +576,8 @@
     }
 
     function switchTab(tab) {
-        ['numpad', 'quick', 'more'].forEach(t => {
+        const tabs = ['numpad', 'quick', 'more'];
+        tabs.forEach(t => {
             const btn = document.getElementById(`tab-${t}`);
             const content = document.getElementById(`content-${t}`);
             if(t === tab) {
@@ -600,13 +609,24 @@
     function showToast(msg) {
         const toast = document.getElementById('toast');
         document.getElementById('toast-msg').innerText = msg;
+        // 確保先移除 show 類別再添加，以重啟 transition
+        toast.classList.remove('show');
+        void toast.offsetWidth; // 觸發重繪
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2000);
+        
+        // 使用定時器自動隱藏
+        if (window.toastTimer) clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
     }
 
     function openModal(type) {
         document.getElementById(`${type}Overlay`).classList.add('active');
         document.getElementById(`${type}Drawer`).classList.add('active');
+        if(type === 'searchProductModal') {
+            setTimeout(() => document.getElementById('global-search-input').focus(), 300);
+        }
     }
     function closeModal(type) {
         document.getElementById(`${type}Overlay`).classList.remove('active');
@@ -620,7 +640,7 @@
     }
 
     function selectPayment(method) {
-        showToast(`已選擇付款方式：${method}`);
+        showToast(`已選擇：${method}`);
     }
 
     function confirmPayment() {
@@ -629,7 +649,7 @@
             showToast('實收金額不足');
             return;
         }
-        showToast('交易完成！列印電子發票中...');
+        showToast('交易完成！列印發票中...');
         setTimeout(() => {
             closeModal('cashPayment');
             document.getElementById('cart-list').innerHTML = `
