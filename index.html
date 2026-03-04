@@ -46,7 +46,7 @@
         .hide-scroll::-webkit-scrollbar { width: 0px; height: 0px; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 強化版按鈕點選回饋：統一為白底、圓角、藍框 */
+        /* 強化版按鈕點選回饋：統一強制白底、圓角、藍框 */
         .btn-active { 
             transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1); 
             cursor: pointer;
@@ -55,19 +55,22 @@
             -webkit-user-select: none;
             outline: none;
             border: 2px solid transparent;
+            border-radius: 1.25rem; /* 強制所有按鈕基礎圓角 */
         }
+        /* 點選時的高對比視覺回饋：解決白色方框問題 */
         .btn-active:active { 
-            transform: scale(0.92); 
+            transform: scale(0.92) !important; 
             background-color: #ffffff !important; 
             border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3) !important;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4) !important;
+            border-radius: 1.25rem !important; /* 確保點擊時圓角不跑版 */
         }
         
-        /* 針對深色底按鈕的特別設定 */
+        /* 深色底按鈕特別處理 */
         .bg-brand-600.btn-active:active, 
         .bg-pay-500.btn-active:active {
             background-color: #1e3a8a !important;
-            filter: brightness(1.1); 
+            filter: brightness(1.2); 
             border-color: #3b82f6 !important;
         }
         
@@ -95,7 +98,11 @@
         
         .bottom-sheet.expanded .sheet-header { display: none; }
         
-        /* 斑馬紋列表 */
+        .sheet-content {
+            pointer-events: auto !important;
+        }
+
+        /* 斑馬紋列表樣式 */
         #cart-list .cart-row:nth-child(odd) { background-color: #ffffff; }
         #cart-list .cart-row:nth-child(even) { background-color: #f3f4f6; }
         .cart-row { transition: background 0.2s; border-left: 6px solid transparent; }
@@ -112,7 +119,7 @@
         .bottom-sheet.expanded .handle { background-color: #e2e8f0; }
 
         .toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 200;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 300;
             pointer-events: none; opacity: 0; transition: all 0.3s;
         }
         .toast.show { opacity: 1; top: 40px; }
@@ -152,13 +159,13 @@
         </div>
     </div>
 
-    <!-- 頁首：版本號 V1.4 -->
+    <!-- 頁首：版本號 V1.6 -->
     <header class="h-16 bg-slate-900 text-white flex items-center justify-between px-6 shrink-0 z-10 pt-2 shadow-lg">
         <div class="flex items-center gap-3">
             <div id="ks-logo" class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center font-black text-sm italic shadow-lg shadow-brand-500/20 active:scale-90 transition-transform">KS</div>
             <div class="flex flex-col">
                 <span class="text-xs font-black tracking-tight leading-none uppercase">中山旗艦店</span>
-                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version">V1.4</span></span>
+                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version">V1.6</span></span>
             </div>
         </div>
         <div class="flex flex-col items-end">
@@ -173,7 +180,8 @@
             <i class="fa-solid fa-crown text-amber-500 text-[10px]"></i>
             <span class="text-xs font-bold text-amber-700">會員服務</span>
         </button>
-        <button onclick="showToast('查看折扣紀錄')" class="flex items-center gap-2 bg-rose-50 px-5 py-2.5 rounded-full border border-rose-200 btn-active shrink-0">
+        <!-- 修改：開啟折扣紀錄 Modal -->
+        <button onclick="openModal('discountListModal')" class="flex items-center gap-2 bg-rose-50 px-5 py-2.5 rounded-full border border-rose-200 btn-active shrink-0">
             <i class="fa-solid fa-tag text-rose-500 text-[10px]"></i>
             <span class="text-xs font-bold text-rose-700">折扣紀錄</span>
         </button>
@@ -322,7 +330,7 @@
         <div class="sheet-header px-8 pt-4 pb-4 shrink-0 cursor-pointer" onclick="expandSheet()">
             <div class="handle w-12 h-1 rounded-full mx-auto mb-4 shadow-inner transition-colors"></div>
             
-            <!-- 第一行：件數圈圈與原始金額 (已換位 + 變白色) -->
+            <!-- 第一行：件數圈圈與原始金額 (加大字體) -->
             <div class="flex justify-between items-center mb-2">
                 <div class="flex items-center gap-3">
                     <span class="sub-label text-[10px] font-black uppercase tracking-widest transition-colors">本次共</span>
@@ -330,12 +338,13 @@
                     <span class="sub-label text-[10px] font-black uppercase tracking-widest transition-colors">件商品</span>
                 </div>
                 <div class="flex flex-col items-end leading-tight">
-                    <span class="text-white text-[8px] font-black uppercase tracking-widest opacity-60">原始金額</span>
-                    <span id="sheet-gross" class="text-white text-base font-black transition-colors">$430</span>
+                    <span class="text-white text-[9px] font-black uppercase tracking-widest opacity-70">原始金額</span>
+                    <!-- 字體加大：text-xl -->
+                    <span id="sheet-gross" class="text-white text-xl font-black transition-colors">$ 430</span>
                 </div>
             </div>
 
-            <!-- 第二行：折扣金額與應付總計 (已換位) -->
+            <!-- 第二行：折扣金額與應付總計 -->
             <div class="flex justify-between items-center mb-3">
                 <div class="flex flex-col leading-tight">
                     <span class="text-rose-400 text-[9px] font-black uppercase opacity-70">折扣</span>
@@ -372,21 +381,21 @@
             <!-- 數字鍵盤 -->
             <div id="content-numpad" class="flex-1 grid grid-cols-4 gap-3 overflow-visible pb-4 relative z-[130]">
                 <div class="col-span-3 grid grid-cols-3 gap-3">
-                    <button onclick="pressBarcodeKey('7')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">7</button>
-                    <button onclick="pressBarcodeKey('8')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">8</button>
-                    <button onclick="pressBarcodeKey('9')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">9</button>
-                    <button onclick="pressBarcodeKey('4')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">4</button>
-                    <button onclick="pressBarcodeKey('5')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">5</button>
-                    <button onclick="pressBarcodeKey('6')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">6</button>
-                    <button onclick="pressBarcodeKey('1')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">1</button>
-                    <button onclick="pressBarcodeKey('2')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">2</button>
-                    <button onclick="pressBarcodeKey('3')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">3</button>
-                    <button onclick="pressBarcodeKey('0')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">0</button>
-                    <button onclick="pressBarcodeKey('00')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-2xl text-slate-800 btn-active py-4">00</button>
-                    <button onclick="clearBarcode()" class="bg-slate-200 rounded-[1.25rem] shadow-sm border border-slate-300 font-black text-base text-slate-600 btn-active uppercase tracking-tighter">清除</button>
+                    <button onclick="pressBarcodeKey('7')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">7</button>
+                    <button onclick="pressBarcodeKey('8')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">8</button>
+                    <button onclick="pressBarcodeKey('9')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">9</button>
+                    <button onclick="pressBarcodeKey('4')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">4</button>
+                    <button onclick="pressBarcodeKey('5')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">5</button>
+                    <button onclick="pressBarcodeKey('6')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">6</button>
+                    <button onclick="pressBarcodeKey('1')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">1</button>
+                    <button onclick="pressBarcodeKey('2')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">2</button>
+                    <button onclick="pressBarcodeKey('3')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">3</button>
+                    <button onclick="pressBarcodeKey('0')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">0</button>
+                    <button onclick="pressBarcodeKey('00')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 font-black text-2xl text-slate-800 btn-active py-4">00</button>
+                    <button onclick="clearBarcode()" class="bg-slate-200 rounded-[1.25rem] shadow-sm border-2 border-slate-300 font-black text-base text-slate-600 btn-active uppercase tracking-tighter">清除</button>
                 </div>
                 <div class="flex flex-col gap-3">
-                    <button onclick="showToast('已加入載具')" class="flex-1 bg-sky-50 text-sky-600 border border-sky-200 rounded-[1.25rem] flex flex-col items-center justify-center gap-1 btn-active shadow-sm">
+                    <button onclick="showToast('已加入載具')" class="flex-1 bg-sky-50 text-sky-600 border-2 border-sky-100 rounded-[1.25rem] flex flex-col items-center justify-center gap-1 btn-active shadow-sm">
                         <i class="fa-solid fa-mobile-screen text-xl"></i><span class="text-[9px] font-black uppercase">載具</span>
                     </button>
                     <button onclick="addBarcodeToCart()" class="flex-1 bg-brand-600 text-white rounded-[1.25rem] flex items-center justify-center btn-active shadow-xl shadow-brand-500/40 border-b-4 border-brand-800">
@@ -395,51 +404,51 @@
                 </div>
             </div>
 
-            <!-- 快捷商品：3個一行排列 + 搜尋欄位 -->
+            <!-- 快捷商品：統一圓角樣式與回饋 -->
             <div id="content-quick" class="hidden flex flex-col gap-4 flex-1 pb-4 relative z-[130] overflow-hidden">
                 <div class="relative shrink-0" onclick="openModal('searchProductModal')">
                     <input type="text" readonly placeholder="搜尋商品名稱或貨號..." class="w-full bg-slate-50 h-12 rounded-xl border-2 border-slate-100 px-10 text-sm font-bold text-slate-400 outline-none shadow-sm cursor-pointer hover:border-brand-500 transition-colors">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                 </div>
                 <div class="flex-1 grid grid-cols-3 gap-3 overflow-y-auto hide-scroll pb-4">
-                    <button class="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
+                    <button class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                         <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-egg"></i></div>
                         <span class="text-[11px] font-black text-slate-800">茶葉蛋</span>
                     </button>
-                    <button class="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
+                    <button class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                         <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-mug-hot"></i></div>
                         <span class="text-[11px] font-black text-slate-800">美式咖啡</span>
                     </button>
-                    <button class="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
+                    <button class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                         <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-bag-shopping"></i></div>
                         <span class="text-[11px] font-black text-slate-800">購物提袋</span>
                     </button>
-                    <button class="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
+                    <button class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                         <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-ice-cream"></i></div>
                         <span class="text-[11px] font-black text-slate-800">霜淇淋</span>
                     </button>
-                    <button class="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
+                    <button class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                         <div class="w-10 h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-bottle-water"></i></div>
                         <span class="text-[11px] font-black text-slate-800">礦泉水</span>
                     </button>
-                    <button class="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
+                    <button class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                         <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-plus"></i></div>
                         <span class="text-[11px] font-black text-slate-400">新增</span>
                     </button>
                 </div>
             </div>
 
-            <!-- 更多功能 -->
+            <!-- 更多功能：統一圓角樣式與回饋 -->
             <div id="content-more" class="hidden flex-1 grid grid-cols-3 gap-3 overflow-visible pb-4 relative z-[130]">
-                <button class="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
+                <button class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                     <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-receipt"></i></div>
                     <span class="text-[11px] font-black text-slate-800">補印發票</span>
                 </button>
-                <button class="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
+                <button class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                     <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-ban"></i></div>
                     <span class="text-[11px] font-black text-slate-800">整筆取消</span>
                 </button>
-                <button class="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
+                <button class="bg-slate-50 rounded-[1.25rem] shadow-sm border-2 border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                     <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-gear"></i></div>
                     <span class="text-[11px] font-black text-slate-800">系統設定</span>
                 </button>
@@ -447,7 +456,7 @@
         </div>
     </div>
 
-    <!-- 商品搜尋全屏視窗 -->
+    <!-- 商品搜尋 Modal -->
     <div id="searchProductModalOverlay" class="modal-overlay" onclick="closeModal('searchProductModal')"></div>
     <div id="searchProductModalDrawer" class="modal-drawer">
         <div class="p-6 flex flex-col gap-6 h-full">
@@ -471,15 +480,45 @@
                     </div>
                     <p class="font-black text-brand-600 text-lg">$ 45</p>
                 </div>
-                <div class="bg-white border-2 border-slate-100 p-4 rounded-2xl flex justify-between items-center btn-active shadow-sm" onclick="showToast('已加入：御飯糰'); closeModal('searchProductModal')">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-cookie"></i></div>
-                        <div>
-                            <p class="font-bold text-slate-800 text-base">鮪魚御飯糰</p>
-                            <p class="text-[10px] text-slate-400 font-mono">#471999000111</p>
-                        </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 折扣紀錄查詢 Modal -->
+    <div id="discountListModalOverlay" class="modal-overlay" onclick="closeModal('discountListModal')"></div>
+    <div id="discountListModalDrawer" class="modal-drawer">
+        <div class="p-6 flex justify-between items-center border-b border-slate-100 shrink-0">
+            <h3 class="font-black text-slate-900 text-xl tracking-tight uppercase">促銷折扣品項</h3>
+            <button onclick="closeModal('discountListModal')" class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 space-y-4">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">當前有效折扣</p>
+            <!-- 折扣商品 1 -->
+            <div class="bg-rose-50 border-2 border-rose-100 p-5 rounded-3xl flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-rose-500 text-white rounded-2xl flex items-center justify-center text-xl shadow-lg shadow-rose-200"><i class="fa-solid fa-percent"></i></div>
+                    <div>
+                        <p class="font-bold text-slate-900 text-base">台灣嚴選椪柑</p>
+                        <p class="text-[10px] text-rose-500 font-black uppercase">現折 $15 (第二件半價)</p>
                     </div>
-                    <p class="font-black text-brand-600 text-lg">$ 35</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-slate-400 line-through">$ 60</p>
+                    <p class="font-black text-rose-600 text-xl">$ 45</p>
+                </div>
+            </div>
+            <!-- 折扣商品 2 -->
+            <div class="bg-amber-50 border-2 border-amber-100 p-5 rounded-3xl flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-amber-500 text-white rounded-2xl flex items-center justify-center text-xl shadow-lg shadow-amber-200"><i class="fa-solid fa-tag"></i></div>
+                    <div>
+                        <p class="font-bold text-slate-900 text-base">鮮蔬火腿三明治</p>
+                        <p class="text-[10px] text-amber-600 font-black uppercase">早鳥特惠 -10%</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-slate-400 line-through">$ 61</p>
+                    <p class="font-black text-slate-900 text-xl">$ 55</p>
                 </div>
             </div>
         </div>
@@ -531,7 +570,7 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-5">
-                <button onclick="openCashPayment()" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm active:border-pay-500">
+                <button onclick="openCashPayment()" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm">
                     <div class="w-16 h-16 rounded-full bg-pay-50 text-pay-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-money-bill-wave"></i></div>
                     <span class="font-black text-slate-800 text-lg uppercase mt-2">現金</span>
                 </button>
@@ -556,16 +595,16 @@
                 <span class="text-slate-400 font-bold uppercase text-xs">應付金額</span>
                 <span id="cash-modal-required" class="text-4xl font-black text-slate-900">$ 415</span>
             </div>
-            <div class="bg-slate-50 rounded-[2.5rem] p-8 border-2 border-slate-100 space-y-4 shadow-inner relative overflow-hidden">
-                <div class="flex flex-wrap justify-between items-center gap-2">
-                    <span class="text-brand-600 font-black text-base uppercase shrink-0">實收現金</span>
+            <div class="bg-slate-50 rounded-[2.5rem] p-8 border-2 border-slate-100 space-y-4 shadow-inner relative overflow-hidden text-right">
+                <div class="flex justify-between items-center gap-2">
+                    <span class="text-brand-600 font-black text-base uppercase shrink-0 text-left">實收現金</span>
                     <div class="flex items-center gap-1 flex-1 justify-end min-w-0">
                         <span class="text-2xl font-black text-slate-300 tracking-tighter">$</span>
                         <input id="cash-received-input" type="text" readonly class="bg-transparent text-5xl font-black text-brand-600 text-right w-full max-w-[180px] outline-none tracking-tighter" value="0">
                     </div>
                 </div>
                 <div class="flex justify-between items-center pt-6 border-t border-slate-200">
-                    <span class="text-rose-500 font-black text-base uppercase shrink-0">找零金額</span>
+                    <span class="text-rose-500 font-black text-base uppercase shrink-0 text-left">找零金額</span>
                     <span id="cash-change-display" class="text-5xl font-black text-rose-500 tracking-tighter leading-none">$ 0</span>
                 </div>
             </div>
