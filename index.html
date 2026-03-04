@@ -44,7 +44,7 @@
         .hide-scroll::-webkit-scrollbar { width: 0px; height: 0px; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 強化版按鈕回饋模式 (與現金按鈕一致) */
+        /* 強化版按鈕回饋模式 */
         .btn-active { 
             transition: all 0.05s cubic-bezier(0.4, 0, 0.2, 1); 
             cursor: pointer;
@@ -75,7 +75,7 @@
         .bottom-sheet.expanded { 
             transform: translateY(0); 
             background: white;
-            z-index: 100; /* 維持在最上層 */
+            z-index: 100; 
         }
         
         .bottom-sheet.expanded .sheet-header { display: none; }
@@ -146,7 +146,7 @@
             <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center font-black text-sm italic shadow-lg shadow-brand-500/20">KS</div>
             <div class="flex flex-col">
                 <span class="text-xs font-black tracking-tight leading-none uppercase">中山旗艦店</span>
-                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | v1.2.5</span>
+                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | v1.30</span>
             </div>
         </div>
         <div class="flex flex-col items-end">
@@ -390,7 +390,7 @@
     <div id="cashPaymentDrawer" class="modal-drawer">
         <div class="p-6 flex justify-between items-center border-b border-slate-100">
             <button onclick="closeModal('cashPayment'); openModal('paymentModal')" class="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-chevron-left text-lg"></i></button>
-            <h3 class="font-black text-slate-900 text-xl tracking-tight uppercase">現金收銀</h3>
+            <h3 class="font-black text-slate-900 text-xl tracking-tight uppercase">現金收銀服務</h3>
             <button onclick="closeModal('cashPayment')" class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-xmark text-xl"></i></button>
         </div>
         <div class="flex-1 overflow-y-auto p-10 space-y-10">
@@ -486,7 +486,7 @@
         if(expand) {
             sheet.classList.add('expanded');
             sheetOverlay.classList.add('active');
-            // 強制重繪以修復某些手機瀏覽器的渲染問題
+            // 強制重繪以修復移動端渲染問題
             sheet.style.display = 'none';
             sheet.offsetHeight; 
             sheet.style.display = 'flex';
@@ -498,6 +498,7 @@
 
     function pressBarcodeKey(key) {
         barcodeInputField.value += key;
+        // 如果未展開則自動展開
         if(!isExpanded) expandSheet(true);
     }
     function clearBarcode() {
