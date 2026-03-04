@@ -150,14 +150,13 @@
         </div>
     </div>
 
-    <!-- 頁首：版本號 V1.2 -->
+    <!-- 頁首：版本號 V1.3 -->
     <header class="h-16 bg-slate-900 text-white flex items-center justify-between px-6 shrink-0 z-10 pt-2 shadow-lg">
         <div class="flex items-center gap-3">
-            <!-- 移除隱藏更新功能 -->
             <div id="ks-logo" class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center font-black text-sm italic shadow-lg shadow-brand-500/20 active:scale-90 transition-transform">KS</div>
             <div class="flex flex-col">
                 <span class="text-xs font-black tracking-tight leading-none uppercase">中山旗艦店</span>
-                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version">V1.2</span></span>
+                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version">V1.3</span></span>
             </div>
         </div>
         <div class="flex flex-col items-end">
@@ -193,9 +192,10 @@
         <div class="w-24 text-right">單價 / 小計</div>
     </div>
 
-    <!-- 購物車主體 -->
+    <!-- 購物車主體 (已增加商品以便捲動) -->
     <main class="flex-1 overflow-y-auto hide-scroll bg-slate-50 pb-[240px]">
         <div id="cart-list" class="flex flex-col">
+            <!-- 商品 1 -->
             <div class="cart-row p-6 flex items-center gap-0 selected" onclick="selectItem(this)">
                 <div class="w-8 flex justify-center shrink-0">
                     <div class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs font-black shadow-md">1</div>
@@ -217,6 +217,7 @@
                 </div>
             </div>
 
+            <!-- 商品 2 -->
             <div class="cart-row p-6 flex items-center gap-0" onclick="selectItem(this)">
                 <div class="w-8 flex justify-center shrink-0">
                     <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-black">2</div>
@@ -237,6 +238,72 @@
                     <div class="text-[9px] text-rose-400 font-bold uppercase tracking-tighter line-through opacity-70">@ 60</div>
                 </div>
             </div>
+
+            <!-- 商品 3 -->
+            <div class="cart-row p-6 flex items-center gap-0" onclick="selectItem(this)">
+                <div class="w-8 flex justify-center shrink-0">
+                    <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-black">3</div>
+                </div>
+                <div class="flex-1 px-4 min-w-0">
+                    <h4 class="font-bold text-slate-800 text-base leading-tight truncate">鮮蔬火腿三明治</h4>
+                    <p class="text-[10px] font-black text-slate-400 mt-1 opacity-70 truncate">#471333444555</p>
+                </div>
+                <div class="w-28 flex justify-center shrink-0">
+                    <div class="flex items-center bg-slate-200/50 rounded-full p-1 border border-slate-200 shadow-inner scale-90">
+                        <button onclick="updateQty(this, -1)" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 btn-active"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                        <span class="w-8 text-center font-black text-slate-800">1</span>
+                        <button onclick="updateQty(this, 1)" class="w-7 h-7 rounded-full flex items-center justify-center text-brand-600 btn-active"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                    </div>
+                </div>
+                <div class="w-24 text-right shrink-0">
+                    <div class="text-lg font-black text-slate-800 tracking-tighter">$ 55</div>
+                    <div class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">@ 55</div>
+                </div>
+            </div>
+
+            <!-- 商品 4 -->
+            <div class="cart-row p-6 flex items-center gap-0" onclick="selectItem(this)">
+                <div class="w-8 flex justify-center shrink-0">
+                    <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-black">4</div>
+                </div>
+                <div class="flex-1 px-4 min-w-0">
+                    <h4 class="font-bold text-slate-800 text-base leading-tight truncate">鮮奶吐司 (大)</h4>
+                    <p class="text-[10px] font-black text-slate-400 mt-1 opacity-70 truncate">#471666777888</p>
+                </div>
+                <div class="w-28 flex justify-center shrink-0">
+                    <div class="flex items-center bg-slate-200/50 rounded-full p-1 border border-slate-200 shadow-inner scale-90">
+                        <button onclick="updateQty(this, -1)" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 btn-active"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                        <span class="w-8 text-center font-black text-slate-800">1</span>
+                        <button onclick="updateQty(this, 1)" class="w-7 h-7 rounded-full flex items-center justify-center text-brand-600 btn-active"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                    </div>
+                </div>
+                <div class="w-24 text-right shrink-0">
+                    <div class="text-lg font-black text-slate-800 tracking-tighter">$ 65</div>
+                    <div class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">@ 65</div>
+                </div>
+            </div>
+
+            <!-- 商品 5 -->
+            <div class="cart-row p-6 flex items-center gap-0" onclick="selectItem(this)">
+                <div class="w-8 flex justify-center shrink-0">
+                    <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-black">5</div>
+                </div>
+                <div class="flex-1 px-4 min-w-0">
+                    <h4 class="font-bold text-slate-800 text-base leading-tight truncate">御茶園無糖綠茶</h4>
+                    <p class="text-[10px] font-black text-slate-400 mt-1 opacity-70 truncate">#471222999000</p>
+                </div>
+                <div class="w-28 flex justify-center shrink-0">
+                    <div class="flex items-center bg-slate-200/50 rounded-full p-1 border border-slate-200 shadow-inner scale-90">
+                        <button onclick="updateQty(this, -1)" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 btn-active"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                        <span class="w-8 text-center font-black text-slate-800">1</span>
+                        <button onclick="updateQty(this, 1)" class="w-7 h-7 rounded-full flex items-center justify-center text-brand-600 btn-active"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                    </div>
+                </div>
+                <div class="w-24 text-right shrink-0">
+                    <div class="text-lg font-black text-slate-800 tracking-tighter">$ 25</div>
+                    <div class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">@ 25</div>
+                </div>
+            </div>
         </div>
         
         <div class="h-20 flex flex-col items-center justify-center text-slate-300 opacity-50 mt-10">
@@ -255,7 +322,7 @@
             <div class="flex justify-between items-center mb-2">
                 <div class="flex items-center gap-3">
                     <span class="sub-label text-[10px] font-black uppercase tracking-widest transition-colors">本次共</span>
-                    <span id="sheet-items-count" class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] font-black shadow-lg shadow-brand-500/20">3</span>
+                    <span id="sheet-items-count" class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] font-black shadow-lg shadow-brand-500/20">5</span>
                     <span class="sub-label text-[10px] font-black uppercase tracking-widest transition-colors">件商品</span>
                 </div>
                 <div class="flex items-baseline gap-1">
@@ -267,11 +334,11 @@
             <div class="flex justify-between items-center mb-3">
                 <div class="flex flex-col leading-tight">
                     <span class="sub-label text-[8px] font-black uppercase tracking-widest opacity-60">原始金額</span>
-                    <span id="sheet-gross" class="sub-label text-base font-black transition-colors opacity-80">$340</span>
+                    <span id="sheet-gross" class="sub-label text-base font-black transition-colors opacity-80">$430</span>
                 </div>
                 <div class="text-right flex items-center justify-end gap-2">
                     <span class="sub-label text-[11px] font-black uppercase tracking-widest transition-colors">應付總計</span>
-                    <span id="sheet-total" class="total-text text-4xl font-black tracking-tighter leading-none transition-colors">$ 325</span>
+                    <span id="sheet-total" class="total-text text-4xl font-black tracking-tighter leading-none transition-colors">$ 415</span>
                 </div>
             </div>
 
@@ -463,7 +530,7 @@
                 <div class="absolute -right-4 -top-4 w-32 h-32 bg-pay-500/10 rounded-full blur-3xl"></div>
                 <div class="flex flex-col relative z-10">
                     <span class="text-[10px] text-slate-500 font-black mb-2">應收總額 Total</span>
-                    <span id="pay-modal-total" class="text-6xl font-black text-pay-500 leading-none tracking-tighter">$ 325</span>
+                    <span id="pay-modal-total" class="text-6xl font-black text-pay-500 leading-none tracking-tighter">$ 415</span>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-5">
@@ -490,7 +557,7 @@
         <div class="flex-1 overflow-y-auto p-6 space-y-6">
             <div class="flex justify-between items-center px-4">
                 <span class="text-slate-400 font-bold uppercase text-xs">應付金額</span>
-                <span id="cash-modal-required" class="text-4xl font-black text-slate-900">$ 325</span>
+                <span id="cash-modal-required" class="text-4xl font-black text-slate-900">$ 415</span>
             </div>
             
             <div class="bg-slate-50 rounded-[2.5rem] p-8 border-2 border-slate-100 space-y-4 shadow-inner relative overflow-hidden">
@@ -536,35 +603,6 @@
         const now = new Date();
         document.getElementById('header-time').innerText = now.toLocaleTimeString('en-GB', { hour12: false });
     }, 1000);
-
-    // 模擬 F5 重新整理功能邏輯
-    function triggerF5Refresh() {
-        const container = document.getElementById('main-container');
-        const ksLogo = document.getElementById('ks-logo');
-        
-        showToast("系統重整中...", true);
-        container.classList.add('refreshing');
-        ksLogo.classList.add('ring-4', 'ring-white', 'scale-110');
-        
-        setTimeout(() => {
-            document.getElementById('cart-list').innerHTML = `
-                <div class="h-96 flex flex-col items-center justify-center text-slate-300 opacity-60">
-                    <div class="w-32 h-32 rounded-[3rem] bg-slate-200 text-slate-400 flex items-center justify-center text-5xl mb-8 shadow-inner">
-                        <i class="fa-solid fa-rotate"></i>
-                    </div>
-                    <p class="font-black text-2xl tracking-[0.2em]">系統已重新整理</p>
-                    <p class="text-xs font-bold mt-4 uppercase text-slate-400 tracking-widest">等待掃描下一筆交易</p>
-                </div>
-            `;
-            document.getElementById('sheet-items-count').innerText = "0";
-            document.getElementById('sheet-discount').innerText = "-$0";
-            document.getElementById('sheet-gross').innerText = "$0";
-            document.getElementById('sheet-total').innerText = "$ 0";
-            container.classList.remove('refreshing');
-            ksLogo.classList.remove('ring-4', 'ring-white', 'scale-110');
-            showToast("系統重整完成");
-        }, 800);
-    }
 
     let isExpanded = false;
     const sheet = document.getElementById('bottomSheet');
@@ -616,7 +654,7 @@
     }
     function updateChange() {
         let received = parseInt(cashInputField.value) || 0;
-        let change = received - 325;
+        let change = received - 415;
         cashChangeDisplay.innerText = `$ ${Math.max(0, change)}`;
         cashChangeDisplay.style.opacity = change < 0 ? "0.2" : "1";
     }
@@ -686,7 +724,7 @@
 
     function confirmPayment() {
         let received = parseInt(cashInputField.value) || 0;
-        if(received < 325) {
+        if(received < 415) {
             showToast('實收金額不足');
             return;
         }
