@@ -44,7 +44,7 @@
         .hide-scroll::-webkit-scrollbar { width: 0px; height: 0px; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 強化版按鈕點選回饋：結合顏色變換與縮放 */
+        /* 強化版按鈕點選回饋：結合高對比變色、內縮、與外框 */
         .btn-active { 
             transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1); 
             cursor: pointer;
@@ -52,19 +52,25 @@
             user-select: none;
             -webkit-user-select: none;
             outline: none;
+            border: 2px solid transparent;
         }
-        /* 點選時的強烈視覺回饋 */
+        /* 點選時的強烈視覺回饋：增加亮度變化與外框 */
         .btn-active:active { 
             transform: scale(0.92); 
-            filter: brightness(0.8);
-            background-color: rgba(59, 130, 246, 0.1); /* 點選時產生淡藍色背景回饋 */
+            background-color: #e2e8f0 !important; /* 強制變灰色背景 */
+            border-color: #3b82f6 !important; /* 強制藍色外框 */
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1) !important;
         }
-        /* 針對原本就是深色的按鈕做特殊回饋 */
-        .bg-brand-600.btn-active:active, .bg-pay-500.btn-active:active {
-            filter: brightness(1.2); /* 深色按鈕按下去變亮 */
+        /* 針對主功能藍色與結帳綠色按鈕做特殊反白回饋 */
+        .bg-brand-600.btn-active:active, 
+        .bg-pay-500.btn-active:active,
+        .bg-brand-500.btn-active:active {
+            background-color: #1e3a8a !important; /* 按下變深藍 */
+            filter: brightness(1.3); /* 增加亮度對比 */
+            border-color: white !important;
         }
         
-        /* 底部面板 */
+        /* 底部面板：縮小收起高度至 235px */
         .bottom-sheet {
             position: absolute; bottom: 0; left: 0; right: 0; 
             height: 80%; 
@@ -113,7 +119,7 @@
         /* 更新動畫 */
         @keyframes version-flash {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.1); color: #3b82f6; }
+            50% { opacity: 0.5; transform: scale(1.1); color: #3b82f6; font-weight: 900; }
         }
         .flash-update { animation: version-flash 0.4s ease-in-out 3; }
 
@@ -158,13 +164,14 @@
         </div>
     </div>
 
-    <!-- 頁首：起始版本 v1.33 -->
+    <!-- 頁首：版本號 V1.0 -->
     <header class="h-16 bg-slate-900 text-white flex items-center justify-between px-6 shrink-0 z-10 pt-2 shadow-lg">
         <div class="flex items-center gap-3">
+            <!-- KS Logo 隱藏更新功能：V1.0 -> V1.1 -->
             <div id="ks-logo" onclick="triggerHiddenUpdate()" class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center font-black text-sm italic shadow-lg shadow-brand-500/20 active:scale-90 transition-transform cursor-pointer">KS</div>
             <div class="flex flex-col">
                 <span class="text-xs font-black tracking-tight leading-none uppercase">中山旗艦店</span>
-                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version" class="transition-all duration-300">v1.33</span></span>
+                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version" class="transition-all duration-300">V1.0</span></span>
             </div>
         </div>
         <div class="flex flex-col items-end">
@@ -370,39 +377,39 @@
             <!-- 數字鍵盤內容 (提升互動權限並強化點擊) -->
             <div id="content-numpad" class="flex-1 grid grid-cols-4 gap-3 overflow-visible pb-4 relative z-[130]">
                 <div class="col-span-3 grid grid-cols-3 gap-3">
-                    <button onclick="pressBarcodeKey('7')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">7</button>
-                    <button onclick="pressBarcodeKey('8')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">8</button>
-                    <button onclick="pressBarcodeKey('9')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">9</button>
-                    <button onclick="pressBarcodeKey('4')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">4</button>
-                    <button onclick="pressBarcodeKey('5')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">5</button>
-                    <button onclick="pressBarcodeKey('6')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">6</button>
-                    <button onclick="pressBarcodeKey('1')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">1</button>
-                    <button onclick="pressBarcodeKey('2')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">2</button>
-                    <button onclick="pressBarcodeKey('3')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">3</button>
-                    <button onclick="pressBarcodeKey('0')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">0</button>
-                    <button onclick="pressBarcodeKey('00')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">00</button>
-                    <button onclick="clearBarcode()" class="bg-slate-200 rounded-[1.25rem] shadow-sm border border-slate-300 font-black text-base text-slate-600 btn-active uppercase tracking-tighter active:bg-slate-400 active:text-white">清除</button>
+                    <button onclick="pressBarcodeKey('7')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">7</button>
+                    <button onclick="pressBarcodeKey('8')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">8</button>
+                    <button onclick="pressBarcodeKey('9')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">9</button>
+                    <button onclick="pressBarcodeKey('4')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">4</button>
+                    <button onclick="pressBarcodeKey('5')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">5</button>
+                    <button onclick="pressBarcodeKey('6')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">6</button>
+                    <button onclick="pressBarcodeKey('1')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">1</button>
+                    <button onclick="pressBarcodeKey('2')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">2</button>
+                    <button onclick="pressBarcodeKey('3')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">3</button>
+                    <button onclick="pressBarcodeKey('0')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">0</button>
+                    <button onclick="pressBarcodeKey('00')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-2xl text-slate-800 btn-active py-4">00</button>
+                    <button onclick="clearBarcode()" class="bg-slate-200 rounded-[1.25rem] shadow-sm border border-slate-300 font-black text-base text-slate-600 btn-active uppercase tracking-tighter">清除</button>
                 </div>
                 <div class="flex flex-col gap-3">
-                    <button onclick="showToast('已加入載具')" class="flex-1 bg-sky-50 text-sky-600 border border-sky-200 rounded-[1.25rem] flex flex-col items-center justify-center gap-1 btn-active shadow-sm active:bg-sky-500 active:text-white">
+                    <button onclick="showToast('已加入載具')" class="flex-1 bg-sky-50 text-sky-600 border border-sky-200 rounded-[1.25rem] flex flex-col items-center justify-center gap-1 btn-active shadow-sm">
                         <i class="fa-solid fa-mobile-screen text-xl"></i><span class="text-[9px] font-black uppercase">載具</span>
                     </button>
-                    <button onclick="addBarcodeToCart()" class="flex-1 bg-brand-600 text-white rounded-[1.25rem] flex items-center justify-center btn-active shadow-xl shadow-brand-500/40 border-b-4 border-brand-800 active:brightness-125">
+                    <button onclick="addBarcodeToCart()" class="flex-1 bg-brand-600 text-white rounded-[1.25rem] flex items-center justify-center btn-active shadow-xl shadow-brand-500/40 border-b-4 border-brand-800">
                         <span class="font-black text-lg tracking-widest">輸入</span>
                     </button>
                 </div>
             </div>
 
             <div id="content-quick" class="hidden grid grid-cols-3 grid-rows-2 gap-4 flex-1 pb-4 relative z-[130]">
-                <button class="bg-slate-50 border border-slate-200 rounded-[1.25rem] p-3 flex flex-col items-center justify-center btn-active shadow-sm active:bg-orange-100">
+                <button class="bg-slate-50 border border-slate-200 rounded-[1.25rem] p-3 flex flex-col items-center justify-center btn-active shadow-sm">
                     <span class="w-10 h-10 rounded-full bg-orange-100 text-orange-400 flex items-center justify-center text-lg mb-1"><i class="fa-solid fa-egg"></i></span>
                     <span class="text-[10px] font-black text-slate-800 text-center leading-tight">茶葉蛋</span>
                 </button>
-                <button class="bg-slate-50 border border-slate-200 rounded-[1.25rem] p-3 flex flex-col items-center justify-center btn-active shadow-sm active:bg-amber-100">
+                <button class="bg-slate-50 border border-slate-200 rounded-[1.25rem] p-3 flex flex-col items-center justify-center btn-active shadow-sm">
                     <span class="w-10 h-10 rounded-full bg-amber-100 text-amber-400 flex items-center justify-center text-lg mb-1"><i class="fa-solid fa-fire"></i></span>
                     <span class="text-[10px] font-black text-slate-800 text-center leading-tight">烤番薯</span>
                 </button>
-                <button class="bg-slate-50 border border-slate-200 rounded-[1.25rem] p-3 flex flex-col items-center justify-center btn-active shadow-sm active:bg-blue-100">
+                <button class="bg-slate-50 border border-slate-200 rounded-[1.25rem] p-3 flex flex-col items-center justify-center btn-active shadow-sm">
                     <span class="w-10 h-10 rounded-full bg-blue-100 text-blue-400 flex items-center justify-center text-lg mb-1"><i class="fa-solid fa-bag-shopping"></i></span>
                     <span class="text-[10px] font-black text-slate-800 text-center leading-tight">提袋</span>
                 </button>
@@ -429,11 +436,11 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-5">
-                <button onclick="openCashPayment()" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm active:border-pay-500">
+                <button onclick="openCashPayment()" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm">
                     <div class="w-16 h-16 rounded-full bg-pay-50 text-pay-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-money-bill-wave"></i></div>
                     <span class="font-black text-slate-800 text-lg uppercase mt-2">現金</span>
                 </button>
-                <button onclick="selectPayment('信用卡')" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm active:border-brand-500">
+                <button onclick="selectPayment('信用卡')" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm">
                     <div class="w-16 h-16 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-credit-card"></i></div>
                     <span class="font-black text-slate-800 text-lg uppercase mt-2">刷卡</span>
                 </button>
@@ -441,7 +448,7 @@
         </div>
     </div>
 
-    <!-- 現金收銀 Modal (修復跑版與回饋) -->
+    <!-- 現金收銀 Modal (修復跑版與長文字問題) -->
     <div id="cashPaymentOverlay" class="modal-overlay" onclick="closeModal('cashPayment')"></div>
     <div id="cashPaymentDrawer" class="modal-drawer">
         <div class="p-6 flex justify-between items-center border-b border-slate-100">
@@ -470,27 +477,27 @@
             </div>
 
             <div class="grid grid-cols-3 gap-3">
-                <button onclick="setCashAmount(100)" class="py-5 bg-white border-2 border-slate-100 rounded-3xl font-black text-slate-700 btn-active shadow-sm text-lg active:bg-slate-100">$ 100</button>
-                <button onclick="setCashAmount(500)" class="py-5 bg-white border-2 border-slate-100 rounded-3xl font-black text-slate-700 btn-active shadow-sm text-lg active:bg-slate-100">$ 500</button>
-                <button onclick="setCashAmount(1000)" class="py-5 bg-white border-2 border-slate-100 rounded-3xl font-black text-slate-700 btn-active shadow-sm text-lg active:bg-slate-100">$ 1000</button>
+                <button onclick="setCashAmount(100)" class="py-5 bg-white border-2 border-slate-100 rounded-3xl font-black text-slate-700 btn-active shadow-sm text-lg">$ 100</button>
+                <button onclick="setCashAmount(500)" class="py-5 bg-white border-2 border-slate-100 rounded-3xl font-black text-slate-700 btn-active shadow-sm text-lg">$ 500</button>
+                <button onclick="setCashAmount(1000)" class="py-5 bg-white border-2 border-slate-100 rounded-3xl font-black text-slate-700 btn-active shadow-sm text-lg">$ 1000</button>
             </div>
             <div class="grid grid-cols-3 gap-3 pb-8">
-                <button onclick="pressCashKey('7')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">7</button>
-                <button onclick="pressCashKey('8')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">8</button>
-                <button onclick="pressCashKey('9')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">9</button>
-                <button onclick="pressCashKey('4')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">4</button>
-                <button onclick="pressCashKey('5')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">5</button>
-                <button onclick="pressCashKey('6')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">6</button>
-                <button onclick="pressCashKey('1')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">1</button>
-                <button onclick="pressCashKey('2')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">2</button>
-                <button onclick="pressCashKey('3')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">3</button>
-                <button onclick="pressCashKey('0')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">0</button>
-                <button onclick="pressCashKey('00')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4 active:bg-brand-500 active:text-white">00</button>
-                <button onclick="clearCashInput()" class="h-16 bg-slate-300 rounded-[1.25rem] font-black text-sm text-slate-900 btn-active uppercase active:bg-slate-400 active:text-white">清除</button>
+                <button onclick="pressCashKey('7')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">7</button>
+                <button onclick="pressCashKey('8')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">8</button>
+                <button onclick="pressCashKey('9')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">9</button>
+                <button onclick="pressCashKey('4')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">4</button>
+                <button onclick="pressCashKey('5')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">5</button>
+                <button onclick="pressCashKey('6')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">6</button>
+                <button onclick="pressCashKey('1')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">1</button>
+                <button onclick="pressCashKey('2')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">2</button>
+                <button onclick="pressCashKey('3')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">3</button>
+                <button onclick="pressCashKey('0')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">0</button>
+                <button onclick="pressCashKey('00')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">00</button>
+                <button onclick="clearCashInput()" class="h-16 bg-slate-300 rounded-[1.25rem] font-black text-sm text-slate-900 btn-active uppercase tracking-tighter">清除</button>
             </div>
         </div>
         <div class="p-8 border-t border-slate-100 bg-slate-50">
-            <button onclick="confirmPayment()" class="w-full bg-pay-500 text-white h-24 rounded-[2.5rem] font-black text-3xl shadow-2xl shadow-pay-500/40 btn-active flex items-center justify-center border-b-4 border-pay-700 transition-all uppercase active:brightness-125">
+            <button onclick="confirmPayment()" class="w-full bg-pay-500 text-white h-24 rounded-[2.5rem] font-black text-3xl shadow-2xl shadow-pay-500/40 btn-active flex items-center justify-center border-b-4 border-pay-700 transition-all uppercase">
                 確認完成收銀 <i class="fa-solid fa-circle-check ml-4"></i>
             </button>
         </div>
@@ -511,13 +518,13 @@
             <div class="w-full space-y-6">
                 <input type="tel" placeholder="輸入會員手機或 ID" class="w-full h-24 bg-slate-50 border-4 border-slate-100 focus:border-amber-400 focus:bg-white rounded-[2.5rem] px-12 text-4xl font-black text-center outline-none transition-all shadow-inner tracking-widest">
                 <div class="grid grid-cols-2 gap-5">
-                    <button class="h-20 bg-white border-2 border-slate-100 rounded-[2rem] font-black text-xl text-slate-600 btn-active shadow-sm flex items-center justify-center gap-4 transition-colors active:bg-amber-50"><i class="fa-solid fa-qrcode text-amber-500"></i>掃描</button>
-                    <button class="h-20 bg-white border-2 border-slate-100 rounded-[2rem] font-black text-xl text-slate-600 btn-active shadow-sm flex items-center justify-center gap-4 transition-colors active:bg-brand-50"><i class="fa-solid fa-id-card text-brand-500"></i>讀卡</button>
+                    <button class="h-20 bg-white border-2 border-slate-100 rounded-[2rem] font-black text-xl text-slate-600 btn-active shadow-sm flex items-center justify-center gap-4 transition-colors"><i class="fa-solid fa-qrcode text-amber-500"></i>掃描</button>
+                    <button class="h-20 bg-white border-2 border-slate-100 rounded-[2rem] font-black text-xl text-slate-600 btn-active shadow-sm flex items-center justify-center gap-4 transition-colors"><i class="fa-solid fa-id-card text-brand-500"></i>讀卡</button>
                 </div>
             </div>
         </div>
         <div class="p-10 mt-auto">
-            <button onclick="showToast('會員已成功登錄：王大同'); closeModal('vipModal')" class="w-full bg-amber-500 text-white h-24 rounded-[2.5rem] font-black text-3xl shadow-xl shadow-amber-500/30 btn-active border-b-4 border-amber-600 transition-all active:brightness-125">
+            <button onclick="showToast('會員已成功登錄：王大同'); closeModal('vipModal')" class="w-full bg-amber-500 text-white h-24 rounded-[2.5rem] font-black text-3xl shadow-xl shadow-amber-500/30 btn-active border-b-4 border-amber-600 transition-all">
                 確認會員身分
             </button>
         </div>
@@ -531,18 +538,19 @@
         document.getElementById('header-time').innerText = now.toLocaleTimeString('en-GB', { hour12: false });
     }, 1000);
 
-    // 隱藏更新功能邏輯：從 v1.33 刷新成 v1.35
+    // 隱藏更新功能邏輯：從 V1.0 刷新成 V1.1
     function triggerHiddenUpdate() {
         showToast("正在檢查更新系統版本...");
         const versionEl = document.getElementById('app-version');
         const ksLogo = document.getElementById('ks-logo');
         
+        // 觸發視覺提示
         ksLogo.classList.add('ring-4', 'ring-white', 'scale-110');
         
         setTimeout(() => {
-            versionEl.innerText = "v1.35";
+            versionEl.innerText = "V1.1";
             versionEl.classList.add('flash-update');
-            showToast("系統已更新至最新版本：v1.35");
+            showToast("系統已成功更新至最新版本：V1.1");
             ksLogo.classList.remove('ring-4', 'ring-white', 'scale-110');
         }, 1500);
     }
