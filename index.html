@@ -152,14 +152,13 @@
         </div>
     </div>
 
-    <!-- 頁首：版本號 V1.2 -->
+    <!-- 頁首：版本號 V1.4 -->
     <header class="h-16 bg-slate-900 text-white flex items-center justify-between px-6 shrink-0 z-10 pt-2 shadow-lg">
         <div class="flex items-center gap-3">
-            <!-- 移除 Logo 隱藏功能 -->
             <div id="ks-logo" class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center font-black text-sm italic shadow-lg shadow-brand-500/20 active:scale-90 transition-transform">KS</div>
             <div class="flex flex-col">
                 <span class="text-xs font-black tracking-tight leading-none uppercase">中山旗艦店</span>
-                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version">V1.2</span></span>
+                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version">V1.4</span></span>
             </div>
         </div>
         <div class="flex flex-col items-end">
@@ -319,25 +318,28 @@
     <div id="sheetOverlay" class="sheet-overlay" onclick="expandSheet(false)"></div>
     
     <div id="bottomSheet" class="bottom-sheet">
+        <!-- 面板頁首 (收起狀態) -->
         <div class="sheet-header px-8 pt-4 pb-4 shrink-0 cursor-pointer" onclick="expandSheet()">
             <div class="handle w-12 h-1 rounded-full mx-auto mb-4 shadow-inner transition-colors"></div>
             
+            <!-- 第一行：件數圈圈與原始金額 (已換位 + 變白色) -->
             <div class="flex justify-between items-center mb-2">
                 <div class="flex items-center gap-3">
                     <span class="sub-label text-[10px] font-black uppercase tracking-widest transition-colors">本次共</span>
                     <span id="sheet-items-count" class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] font-black shadow-lg shadow-brand-500/20">5</span>
                     <span class="sub-label text-[10px] font-black uppercase tracking-widest transition-colors">件商品</span>
                 </div>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-rose-400 text-[9px] font-black uppercase opacity-70">折扣</span>
-                    <span id="sheet-discount" class="text-rose-400 text-lg font-black transition-colors">-$15</span>
+                <div class="flex flex-col items-end leading-tight">
+                    <span class="text-white text-[8px] font-black uppercase tracking-widest opacity-60">原始金額</span>
+                    <span id="sheet-gross" class="text-white text-base font-black transition-colors">$430</span>
                 </div>
             </div>
 
+            <!-- 第二行：折扣金額與應付總計 (已換位) -->
             <div class="flex justify-between items-center mb-3">
                 <div class="flex flex-col leading-tight">
-                    <span class="sub-label text-[8px] font-black uppercase tracking-widest opacity-60">原始金額</span>
-                    <span id="sheet-gross" class="sub-label text-base font-black transition-colors opacity-80">$430</span>
+                    <span class="text-rose-400 text-[9px] font-black uppercase opacity-70">折扣</span>
+                    <span id="sheet-discount" class="text-rose-400 text-lg font-black transition-colors">-$15</span>
                 </div>
                 <div class="text-right flex items-center justify-end gap-2">
                     <span class="sub-label text-[11px] font-black uppercase tracking-widest transition-colors">應付總計</span>
@@ -395,12 +397,10 @@
 
             <!-- 快捷商品：3個一行排列 + 搜尋欄位 -->
             <div id="content-quick" class="hidden flex flex-col gap-4 flex-1 pb-4 relative z-[130] overflow-hidden">
-                <!-- 商品搜尋入口 -->
                 <div class="relative shrink-0" onclick="openModal('searchProductModal')">
                     <input type="text" readonly placeholder="搜尋商品名稱或貨號..." class="w-full bg-slate-50 h-12 rounded-xl border-2 border-slate-100 px-10 text-sm font-bold text-slate-400 outline-none shadow-sm cursor-pointer hover:border-brand-500 transition-colors">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                 </div>
-                <!-- 快捷鍵矩陣 3x3 -->
                 <div class="flex-1 grid grid-cols-3 gap-3 overflow-y-auto hide-scroll pb-4">
                     <button class="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 p-3 flex flex-col items-center justify-center btn-active h-24">
                         <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg mb-2"><i class="fa-solid fa-egg"></i></div>
@@ -447,7 +447,7 @@
         </div>
     </div>
 
-    <!-- 全新：商品搜尋全屏視窗 -->
+    <!-- 商品搜尋全屏視窗 -->
     <div id="searchProductModalOverlay" class="modal-overlay" onclick="closeModal('searchProductModal')"></div>
     <div id="searchProductModalDrawer" class="modal-drawer">
         <div class="p-6 flex flex-col gap-6 h-full">
@@ -455,17 +455,12 @@
                 <h3 class="font-black text-slate-900 text-xl tracking-tight uppercase">搜尋商品</h3>
                 <button onclick="closeModal('searchProductModal')" class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            
-            <!-- 搜尋輸入框 -->
             <div class="relative shrink-0">
                 <input id="global-search-input" type="text" placeholder="輸入名稱或貨號..." class="w-full h-16 bg-slate-50 border-4 border-slate-100 focus:border-brand-500 focus:bg-white rounded-2xl px-12 text-2xl font-black outline-none transition-all shadow-inner tracking-widest">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
             </div>
-            
-            <!-- 搜尋結果區 -->
             <div class="flex-1 overflow-y-auto space-y-3 pb-10 hide-scroll">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">推薦搜尋結果</p>
-                <!-- 模擬結果 1 -->
                 <div class="bg-white border-2 border-slate-100 p-4 rounded-2xl flex justify-between items-center btn-active shadow-sm" onclick="showToast('已加入：鮮奶三明治'); closeModal('searchProductModal')">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-bread-slice"></i></div>
@@ -476,7 +471,6 @@
                     </div>
                     <p class="font-black text-brand-600 text-lg">$ 45</p>
                 </div>
-                <!-- 模擬結果 2 -->
                 <div class="bg-white border-2 border-slate-100 p-4 rounded-2xl flex justify-between items-center btn-active shadow-sm" onclick="showToast('已加入：御飯糰'); closeModal('searchProductModal')">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-cookie"></i></div>
@@ -486,17 +480,6 @@
                         </div>
                     </div>
                     <p class="font-black text-brand-600 text-lg">$ 35</p>
-                </div>
-                <!-- 模擬結果 3 -->
-                <div class="bg-white border-2 border-slate-100 p-4 rounded-2xl flex justify-between items-center btn-active shadow-sm" onclick="showToast('已加入：巧克力牛奶'); closeModal('searchProductModal')">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-bottle-water"></i></div>
-                        <div>
-                            <p class="font-bold text-slate-800 text-base">巧克力牛奶</p>
-                            <p class="text-[10px] text-slate-400 font-mono">#471777888999</p>
-                        </div>
-                    </div>
-                    <p class="font-black text-brand-600 text-lg">$ 32</p>
                 </div>
             </div>
         </div>
@@ -539,10 +522,10 @@
             <h3 class="font-black text-slate-900 text-xl tracking-tight uppercase">選擇付款方式</h3>
             <button onclick="closeModal('paymentModal')" class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-xmark text-xl"></i></button>
         </div>
-        <div class="flex-1 p-8 space-y-8 overflow-y-auto">
+        <div class="flex-1 p-8 space-y-8 overflow-y-auto text-right">
             <div class="bg-slate-900 rounded-[2.5rem] p-10 text-white flex justify-between items-center shadow-2xl relative border border-white/5 shrink-0">
                 <div class="absolute -right-4 -top-4 w-32 h-32 bg-pay-500/10 rounded-full blur-3xl"></div>
-                <div class="flex flex-col relative z-10">
+                <div class="flex flex-col relative z-10 text-left">
                     <span class="text-[10px] text-slate-500 font-black mb-2">應收總額 Total</span>
                     <span id="pay-modal-total" class="text-6xl font-black text-pay-500 leading-none tracking-tighter">$ 415</span>
                 </div>
@@ -573,9 +556,8 @@
                 <span class="text-slate-400 font-bold uppercase text-xs">應付金額</span>
                 <span id="cash-modal-required" class="text-4xl font-black text-slate-900">$ 415</span>
             </div>
-            
             <div class="bg-slate-50 rounded-[2.5rem] p-8 border-2 border-slate-100 space-y-4 shadow-inner relative overflow-hidden">
-                <div class="flex justify-between items-center gap-2">
+                <div class="flex flex-wrap justify-between items-center gap-2">
                     <span class="text-brand-600 font-black text-base uppercase shrink-0">實收現金</span>
                     <div class="flex items-center gap-1 flex-1 justify-end min-w-0">
                         <span class="text-2xl font-black text-slate-300 tracking-tighter">$</span>
@@ -587,7 +569,6 @@
                     <span id="cash-change-display" class="text-5xl font-black text-rose-500 tracking-tighter leading-none">$ 0</span>
                 </div>
             </div>
-
             <div class="grid grid-cols-3 gap-3 pb-8">
                 <button onclick="pressCashKey('7')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">7</button>
                 <button onclick="pressCashKey('8')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">8</button>
