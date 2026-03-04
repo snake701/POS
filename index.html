@@ -13,6 +13,14 @@
                     colors: {
                         brand: { 50: '#f0f7ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' },
                         pay: { 500: '#10b981', 600: '#059669' }
+                    },
+                    animation: {
+                        'slide-up': 'slideUp 0.3s ease-out forwards',
+                        'fade-in': 'fadeIn 0.2s ease-out forwards'
+                    },
+                    keyframes: {
+                        slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } }
                     }
                 }
             }
@@ -25,8 +33,8 @@
             height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; 
             background-color: #f8fafc;
             font-family: 'Noto Sans TC', sans-serif; 
-            /* 避免 iOS 橡皮筋回彈影響操作 */
             overscroll-behavior: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .pos-app-container { 
@@ -41,41 +49,39 @@
         /* 底部面板：修復移動端顯示與模糊問題 */
         .bottom-sheet {
             position: absolute; bottom: 0; left: 0; right: 0; 
-            height: 80%; /* 展開高度 */
+            height: 75%; /* 展開後佔比 75% */
             background: #1e293b; 
             border-radius: 2.5rem 2.5rem 0 0;
             box-shadow: 0 -15px 50px rgba(0,0,0,0.4);
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 40;
+            z-index: 100; /* 確保在最上層 */
             display: flex; flex-direction: column;
-            /* 調整收起位置，確保按鈕在各種手機底部導覽列上方 */
-            transform: translateY(calc(100% - 285px)); 
-            padding-bottom: env(safe-area-inset-bottom);
+            /* 調整收起位置，考慮 Safe Area 與按鈕高度 */
+            transform: translateY(calc(100% - 270px)); 
+            padding-bottom: env(safe-area-inset-bottom, 20px);
             will-change: transform;
-            backface-visibility: hidden;
+            pointer-events: auto;
         }
         
-        /* 展開狀態：移除可能導致模糊的濾鏡，確保點擊穿透正確 */
         .bottom-sheet.expanded { 
             transform: translateY(0); 
             background: white;
             border-radius: 2rem 2rem 0 0;
-            backdrop-filter: none; /* 移除模糊以解決某些手機渲染問題 */
         }
         
+        /* 展開後隱藏金額頁首 */
         .bottom-sheet.expanded .sheet-header { display: none; }
         
-        /* 斑馬紋樣式 */
-        .cart-row { transition: background 0.2s; border-left: 6px solid transparent; }
+        /* 斑馬紋列表 */
         .cart-row:nth-child(odd) { background-color: #ffffff; }
         .cart-row:nth-child(even) { background-color: #f3f4f6; }
         .cart-row.selected { 
-            border-left-color: #3b82f6 !important; 
+            border-left: 6px solid #3b82f6 !important; 
             background-color: #dbeafe !important; 
         }
 
-        /* 文字顏色動態切換 */
-        .bottom-sheet .total-text { color: #34d399; } /* 收起時用較亮的 Emerald 綠 */
+        /* 配色邏輯 */
+        .bottom-sheet .total-text { color: #34d399; } 
         .bottom-sheet.expanded .total-text { color: #1e293b; }
         .bottom-sheet .sub-label { color: #94a3b8; } 
         .bottom-sheet.expanded .sub-label { color: #64748b; }
@@ -83,14 +89,14 @@
         .bottom-sheet.expanded .handle { background-color: #e2e8f0; }
 
         .toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 200;
             pointer-events: none; opacity: 0; transition: all 0.3s;
         }
         .toast.show { opacity: 1; top: 40px; }
 
         .modal-overlay { 
             position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); 
-            backdrop-filter: blur(10px); z-index: 35; opacity: 0; 
+            z-index: 150; opacity: 0; 
             pointer-events: none; transition: opacity 0.3s; 
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
@@ -98,7 +104,7 @@
         .modal-drawer { 
             position: fixed; bottom: -100%; left: 0; right: 0; 
             background: white; border-radius: 2.5rem 2.5rem 0 0; 
-            z-index: 60; transition: bottom 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 200; transition: bottom 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             max-height: 95%; display: flex; flex-direction: column;
             padding-bottom: env(safe-area-inset-bottom);
         }
@@ -131,7 +137,7 @@
         </div>
     </header>
 
-    <!-- 快速功能列 -->
+    <!-- 功能列 -->
     <div class="bg-white px-4 py-3 border-b border-slate-100 flex items-center gap-2 overflow-x-auto hide-scroll shrink-0 shadow-sm">
         <button onclick="openModal('vipModal')" class="flex items-center gap-2 bg-amber-50 px-5 py-2.5 rounded-full border border-amber-200 btn-active shrink-0">
             <i class="fa-solid fa-crown text-amber-500 text-[10px]"></i>
@@ -159,7 +165,7 @@
     </div>
 
     <!-- 購物車主體 -->
-    <main class="flex-1 overflow-y-auto hide-scroll bg-slate-50 pb-[285px]">
+    <main class="flex-1 overflow-y-auto hide-scroll bg-slate-50 pb-[280px]">
         <div id="cart-list" class="flex flex-col">
             <!-- 商品 1 -->
             <div class="cart-row p-6 flex items-start gap-4 selected" onclick="selectItem(this)">
@@ -222,10 +228,10 @@
     </main>
 
     <!-- 底部面板 -->
-    <div id="overlay" class="modal-overlay" onclick="expandSheet(false)"></div>
+    <div id="sheetOverlay" class="modal-overlay" onclick="expandSheet(false)"></div>
     
     <div id="bottomSheet" class="bottom-sheet">
-        <!-- 面板頁首 (收起狀態：修復高度與按鈕卡掉) -->
+        <!-- 面板頁首 (收起狀態) -->
         <div class="sheet-header px-8 pt-5 pb-6 shrink-0 cursor-pointer" onclick="expandSheet()">
             <div class="handle w-16 h-1.5 rounded-full mx-auto mb-5 shadow-inner transition-colors"></div>
             
@@ -246,11 +252,9 @@
                     <span class="sub-label text-[9px] font-black uppercase tracking-widest opacity-60">原始金額</span>
                     <span class="sub-label text-lg font-black transition-colors opacity-80">$340</span>
                 </div>
-                <div class="text-right">
-                    <div class="flex items-baseline gap-2 justify-end">
-                        <span class="sub-label text-[11px] font-black uppercase tracking-widest transition-colors">應付總計</span>
-                        <span id="sheet-total" class="total-text text-5xl font-black tracking-tighter leading-none transition-colors">$ 325</span>
-                    </div>
+                <div class="text-right flex items-center justify-end gap-2">
+                    <span class="sub-label text-[11px] font-black uppercase tracking-widest transition-colors">應付總計</span>
+                    <span id="sheet-total" class="total-text text-5xl font-black tracking-tighter leading-none transition-colors">$ 325</span>
                 </div>
             </div>
 
@@ -261,11 +265,11 @@
             </div>
         </div>
 
-        <!-- 展開後內容 (白底輸入介面：優化可見性與點擊) -->
+        <!-- 展開後內容 (白底輸入介面) -->
         <div class="flex-1 p-6 flex flex-col gap-5 overflow-hidden">
             <div class="pt-2">
                 <div class="relative">
-                    <input id="barcode-input" type="text" readonly placeholder="請輸入商品貨號或條碼..." class="w-full bg-slate-100 h-16 rounded-[1.5rem] border-2 border-slate-200 px-12 font-black text-2xl text-brand-600 focus:border-brand-500 outline-none shadow-sm transition-all placeholder:text-slate-400 placeholder:text-sm">
+                    <input id="barcode-input" type="text" readonly placeholder="請輸入商品貨號或條碼..." class="w-full bg-slate-100 h-16 rounded-[1.5rem] border-2 border-slate-200 px-12 font-black text-3xl text-brand-600 focus:border-brand-500 outline-none shadow-sm transition-all placeholder:text-slate-400 placeholder:text-sm">
                     <i class="fa-solid fa-barcode absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
                     <button onclick="clearBarcode()" class="absolute right-5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-slate-300 hover:text-rose-500 transition-colors"><i class="fa-solid fa-circle-xmark text-xl"></i></button>
                 </div>
@@ -277,7 +281,7 @@
                 <button onclick="switchTab('more')" id="tab-more" class="flex-1 py-3 text-sm font-black text-slate-500">更多功能</button>
             </div>
 
-            <!-- 數字鍵盤：修正模糊與點擊 -->
+            <!-- 數字鍵盤內容 -->
             <div id="content-numpad" class="flex-1 grid grid-cols-4 gap-3 overflow-visible pb-4">
                 <div class="col-span-3 grid grid-cols-3 gap-3">
                     <button onclick="pressBarcodeKey('7')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">7</button>
@@ -332,7 +336,7 @@
         </div>
     </div>
 
-    <!-- 付款 Modal -->
+    <!-- 付款選單 Modal -->
     <div id="paymentModalOverlay" class="modal-overlay" onclick="closeModal('paymentModal')"></div>
     <div id="paymentModalDrawer" class="modal-drawer">
         <div class="p-6 flex justify-between items-center border-b border-slate-100">
@@ -340,7 +344,7 @@
             <button onclick="closeModal('paymentModal')" class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-xmark text-xl"></i></button>
         </div>
         <div class="flex-1 p-8 space-y-8">
-            <div class="bg-slate-900 rounded-[2.5rem] p-10 text-white flex justify-between items-center shadow-2xl relative overflow-hidden">
+            <div class="bg-slate-900 rounded-[2.5rem] p-10 text-white flex justify-between items-center shadow-2xl relative overflow-hidden border border-white/5">
                 <div class="absolute -right-4 -top-4 w-32 h-32 bg-pay-500/10 rounded-full blur-3xl"></div>
                 <div class="flex flex-col relative z-10">
                     <span class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">應收總額 Total</span>
@@ -454,7 +458,7 @@
     const TOTAL_AMOUNT = 325;
     let isExpanded = false;
     const sheet = document.getElementById('bottomSheet');
-    const overlay = document.getElementById('overlay');
+    const sheetOverlay = document.getElementById('sheetOverlay');
     const barcodeInputField = document.getElementById('barcode-input');
     const cashInputField = document.getElementById('cash-received-input');
     const cashChangeDisplay = document.getElementById('cash-change-display');
@@ -463,10 +467,10 @@
         isExpanded = expand;
         if(expand) {
             sheet.classList.add('expanded');
-            overlay.classList.add('active');
+            sheetOverlay.classList.add('active');
         } else {
             sheet.classList.remove('expanded');
-            overlay.classList.remove('active');
+            sheetOverlay.classList.remove('active');
         }
     }
 
@@ -482,7 +486,7 @@
             showToast(`已搜尋並加入商品：${barcodeInputField.value}`);
             clearBarcode();
         } else {
-            showToast('請輸入貨號');
+            showToast('請先輸入貨號');
         }
     }
 
@@ -507,8 +511,7 @@
     }
 
     function switchTab(tab) {
-        const tabs = ['numpad', 'quick', 'more'];
-        tabs.forEach(t => {
+        ['numpad', 'quick', 'more'].forEach(t => {
             const btn = document.getElementById(`tab-${t}`);
             const content = document.getElementById(`content-${t}`);
             if(t === tab) {
