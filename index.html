@@ -16,11 +16,13 @@
                     },
                     animation: {
                         'slide-up': 'slideUp 0.3s ease-out forwards',
-                        'fade-in': 'fadeIn 0.2s ease-out forwards'
+                        'fade-in': 'fadeIn 0.2s ease-out forwards',
+                        'system-flash': 'systemFlash 0.4s ease-out'
                     },
                     keyframes: {
                         slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } }
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        systemFlash: { '0%': { opacity: '1' }, '50%': { opacity: '0.3' }, '100%': { opacity: '1' } }
                     }
                 }
             }
@@ -41,10 +43,13 @@
             display: flex; flex-direction: column; height: 100dvh; width: 100%; position: relative;
         }
 
+        /* 系統閃爍效果 (重新整理時) */
+        .refreshing { animation: system-flash 0.4s ease-out; }
+
         .hide-scroll::-webkit-scrollbar { width: 0px; height: 0px; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 強化版按鈕點選回饋：結合高對比變色、內縮、與外框 */
+        /* 強化版按鈕點選回饋：底色、外框、縮放 */
         .btn-active { 
             transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1); 
             cursor: pointer;
@@ -54,23 +59,23 @@
             outline: none;
             border: 2px solid transparent;
         }
-        /* 點選時的強烈視覺回饋：增加亮度變化與外框 */
         .btn-active:active { 
             transform: scale(0.92); 
-            background-color: #e2e8f0 !important; /* 強制變灰色背景 */
-            border-color: #3b82f6 !important; /* 強制藍色外框 */
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1) !important;
+            background-color: #e2e8f0 !important; 
+            border-color: #3b82f6 !important;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1), 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
         }
-        /* 針對主功能藍色與結帳綠色按鈕做特殊反白回饋 */
+        
+        /* 深色按鈕專屬回饋 */
         .bg-brand-600.btn-active:active, 
         .bg-pay-500.btn-active:active,
         .bg-brand-500.btn-active:active {
-            background-color: #1e3a8a !important; /* 按下變深藍 */
-            filter: brightness(1.3); /* 增加亮度對比 */
+            background-color: #1e3a8a !important; 
+            filter: brightness(1.2); 
             border-color: white !important;
         }
         
-        /* 底部面板：縮小收起高度至 235px */
+        /* 底部面板：收起高度 235px */
         .bottom-sheet {
             position: absolute; bottom: 0; left: 0; right: 0; 
             height: 80%; 
@@ -94,12 +99,11 @@
         
         .bottom-sheet.expanded .sheet-header { display: none; }
         
-        /* 確保展開後內容可點選 */
         .sheet-content {
             pointer-events: auto !important;
         }
 
-        /* 斑馬紋列表樣式 */
+        /* 斑馬紋列表 */
         #cart-list .cart-row:nth-child(odd) { background-color: #ffffff !important; }
         #cart-list .cart-row:nth-child(even) { background-color: #f3f4f6 !important; }
         .cart-row { transition: background 0.2s; border-left: 6px solid transparent; }
@@ -108,20 +112,13 @@
             background-color: #dbeafe !important; 
         }
 
-        /* 文字配色動態調整 */
+        /* 配色與排版 */
         .bottom-sheet .total-text { color: #34d399; } 
         .bottom-sheet.expanded .total-text { color: #1e293b; }
         .bottom-sheet .sub-label { color: #94a3b8; } 
         .bottom-sheet.expanded .sub-label { color: #64748b; }
         .bottom-sheet .handle { background-color: #475569; }
         .bottom-sheet.expanded .handle { background-color: #e2e8f0; }
-
-        /* 更新動畫 */
-        @keyframes version-flash {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.1); color: #3b82f6; font-weight: 900; }
-        }
-        .flash-update { animation: version-flash 0.4s ease-in-out 3; }
 
         .toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 200;
@@ -155,23 +152,23 @@
 </head>
 <body>
 
-<div class="pos-app-container">
-    <!-- 提示訊息系統 -->
+<div id="main-container" class="pos-app-container">
+    <!-- 提示訊息 -->
     <div id="toast" class="toast">
         <div class="bg-slate-800 text-white px-8 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-slate-600">
-            <i id="toast-icon" class="fa-solid fa-circle-check text-pay-500"></i>
-            <span id="toast-msg" class="text-sm font-bold">操作成功</span>
+            <i id="toast-icon" class="fa-solid fa-circle-notch fa-spin text-brand-500"></i>
+            <span id="toast-msg" class="text-sm font-bold">系統處理中</span>
         </div>
     </div>
 
-    <!-- 頁首：版本號 V1.0 -->
+    <!-- 頁首：版本號 v1.35 -->
     <header class="h-16 bg-slate-900 text-white flex items-center justify-between px-6 shrink-0 z-10 pt-2 shadow-lg">
         <div class="flex items-center gap-3">
-            <!-- KS Logo 隱藏更新功能：V1.0 -> V1.1 -->
-            <div id="ks-logo" onclick="triggerHiddenUpdate()" class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center font-black text-sm italic shadow-lg shadow-brand-500/20 active:scale-90 transition-transform cursor-pointer">KS</div>
+            <!-- KS Logo 模擬 F5 重新整理 -->
+            <div id="ks-logo" onclick="triggerF5Refresh()" class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center font-black text-sm italic shadow-lg shadow-brand-500/20 active:scale-90 transition-transform cursor-pointer">KS</div>
             <div class="flex flex-col">
                 <span class="text-xs font-black tracking-tight leading-none uppercase">中山旗艦店</span>
-                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version" class="transition-all duration-300">V1.0</span></span>
+                <span class="text-[10px] text-slate-400 mt-1 uppercase leading-none">01 號機 | 店長 | <span id="app-version">v1.35</span></span>
             </div>
         </div>
         <div class="flex flex-col items-end">
@@ -184,15 +181,15 @@
     <div class="bg-white px-4 py-3 border-b border-slate-100 flex items-center gap-2 overflow-x-auto hide-scroll shrink-0 shadow-sm">
         <button onclick="openModal('vipModal')" class="flex items-center gap-2 bg-amber-50 px-5 py-2.5 rounded-full border border-amber-200 btn-active shrink-0">
             <i class="fa-solid fa-crown text-amber-500 text-[10px]"></i>
-            <span class="text-xs font-bold text-amber-700">會員</span>
+            <span class="text-xs font-bold text-amber-700">會員服務</span>
         </button>
         <button onclick="showToast('查看折扣紀錄')" class="flex items-center gap-2 bg-rose-50 px-5 py-2.5 rounded-full border border-rose-200 btn-active shrink-0">
             <i class="fa-solid fa-tag text-rose-500 text-[10px]"></i>
-            <span class="text-xs font-bold text-rose-700">折扣</span>
+            <span class="text-xs font-bold text-rose-700">折扣紀錄</span>
         </button>
         <button onclick="showToast('查看歷史紀錄')" class="flex items-center gap-2 bg-slate-100 px-5 py-2.5 rounded-full border border-slate-200 btn-active shrink-0">
             <i class="fa-solid fa-clock-rotate-left text-slate-500 text-[10px]"></i>
-            <span class="text-xs font-bold text-slate-700">歷史</span>
+            <span class="text-xs font-bold text-slate-700">歷史紀錄</span>
         </button>
         <button onclick="showToast('更多功能')" class="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active shrink-0 border border-slate-200">
             <i class="fa-solid fa-grid-2 text-xs"></i>
@@ -210,7 +207,7 @@
     <!-- 購物車主體 -->
     <main class="flex-1 overflow-y-auto hide-scroll bg-slate-50 pb-[240px]">
         <div id="cart-list" class="flex flex-col">
-            <!-- 商品 1 -->
+            <!-- 初始商品 -->
             <div class="cart-row p-6 flex items-start gap-4 selected" onclick="selectItem(this)">
                 <div class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs font-black shrink-0 mt-1 shadow-md">1</div>
                 <div class="flex-1">
@@ -238,7 +235,6 @@
                 </div>
             </div>
 
-            <!-- 商品 2 -->
             <div class="cart-row p-6 flex items-start gap-4" onclick="selectItem(this)">
                 <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-black shrink-0 mt-1">2</div>
                 <div class="flex-1">
@@ -262,61 +258,11 @@
                     </div>
                 </div>
             </div>
-
-            <!-- 商品 3 -->
-            <div class="cart-row p-6 flex items-start gap-4" onclick="selectItem(this)">
-                <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-black shrink-0 mt-1">3</div>
-                <div class="flex-1">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="font-bold text-slate-800 text-base leading-tight tracking-tight">鮮蔬火腿三明治</h4>
-                            <p class="text-[10px] font-black text-slate-400 mt-1 opacity-70">#471333444555</p>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-xl font-black text-slate-800 tracking-tighter">$ 55</div>
-                            <div class="text-[10px] text-slate-400 font-bold">單價 @ 55</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between mt-3">
-                        <div class="flex items-center bg-slate-200/50 rounded-full p-1 border border-slate-200 shadow-inner">
-                            <button onclick="updateQty(this, -1)" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 btn-active"><i class="fa-solid fa-minus text-[10px]"></i></button>
-                            <span class="w-10 text-center font-black text-slate-800">1</span>
-                            <button onclick="updateQty(this, 1)" class="w-8 h-8 rounded-full flex items-center justify-center text-brand-600 btn-active"><i class="fa-solid fa-plus text-[10px]"></i></button>
-                        </div>
-                        <button class="text-slate-300 hover:text-red-500 w-10 h-10 flex items-center justify-center btn-active transition-colors"><i class="fa-solid fa-trash-can text-base"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 商品 4 -->
-            <div class="cart-row p-6 flex items-start gap-4" onclick="selectItem(this)">
-                <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-black shrink-0 mt-1">4</div>
-                <div class="flex-1">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="font-bold text-slate-800 text-base leading-tight tracking-tight">舒潔面紙隨身包</h4>
-                            <p class="text-[10px] font-black text-slate-400 mt-1 opacity-70">#471122334455</p>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-xl font-black text-slate-800 tracking-tighter">$ 10</div>
-                            <div class="text-[10px] text-slate-400 font-bold">單價 @ 10</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between mt-3">
-                        <div class="flex items-center bg-slate-200/50 rounded-full p-1 border border-slate-200 shadow-inner">
-                            <button onclick="updateQty(this, -1)" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 btn-active"><i class="fa-solid fa-minus text-[10px]"></i></button>
-                            <span class="w-10 text-center font-black text-slate-800">1</span>
-                            <button onclick="updateQty(this, 1)" class="w-8 h-8 rounded-full flex items-center justify-center text-brand-600 btn-active"><i class="fa-solid fa-plus text-[10px]"></i></button>
-                        </div>
-                        <button class="text-slate-300 hover:text-red-500 w-10 h-10 flex items-center justify-center btn-active transition-colors"><i class="fa-solid fa-trash-can text-base"></i></button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="h-20 flex flex-col items-center justify-center text-slate-300 opacity-50 mt-10">
-                <i class="fa-solid fa-barcode text-5xl mb-4"></i>
-                <p class="text-sm font-bold tracking-widest uppercase">等待掃描商品...</p>
-            </div>
+        </div>
+        
+        <div class="h-20 flex flex-col items-center justify-center text-slate-300 opacity-50 mt-10">
+            <i class="fa-solid fa-barcode text-5xl mb-4"></i>
+            <p class="text-sm font-bold tracking-widest uppercase">等待掃描商品...</p>
         </div>
     </main>
 
@@ -331,23 +277,23 @@
             <div class="flex justify-between items-center mb-2">
                 <div class="flex items-center gap-3">
                     <span class="sub-label text-[10px] font-black uppercase tracking-widest transition-colors">本次共</span>
-                    <span class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] font-black shadow-lg shadow-brand-500/20">5</span>
+                    <span id="sheet-items-count" class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] font-black shadow-lg shadow-brand-500/20">3</span>
                     <span class="sub-label text-[10px] font-black uppercase tracking-widest transition-colors">件商品</span>
                 </div>
                 <div class="flex items-baseline gap-1">
                     <span class="text-rose-400 text-[9px] font-black uppercase opacity-70">折扣</span>
-                    <span class="text-rose-400 text-lg font-black transition-colors">-$15</span>
+                    <span id="sheet-discount" class="text-rose-400 text-lg font-black transition-colors">-$15</span>
                 </div>
             </div>
 
             <div class="flex justify-between items-center mb-3">
                 <div class="flex flex-col leading-tight">
                     <span class="sub-label text-[8px] font-black uppercase tracking-widest opacity-60">原始金額</span>
-                    <span class="sub-label text-base font-black transition-colors opacity-80">$365</span>
+                    <span id="sheet-gross" class="sub-label text-base font-black transition-colors opacity-80">$300</span>
                 </div>
                 <div class="text-right flex items-center justify-end gap-2">
                     <span class="sub-label text-[11px] font-black uppercase tracking-widest transition-colors">應付總計</span>
-                    <span id="sheet-total" class="total-text text-4xl font-black tracking-tighter leading-none transition-colors">$ 350</span>
+                    <span id="sheet-total" class="total-text text-4xl font-black tracking-tighter leading-none transition-colors">$ 285</span>
                 </div>
             </div>
 
@@ -358,7 +304,7 @@
             </div>
         </div>
 
-        <!-- 展開後內容 (數字鍵盤) -->
+        <!-- 展開後內容 -->
         <div class="sheet-content flex-1 p-6 flex flex-col gap-5 overflow-hidden">
             <div class="pt-2">
                 <div class="relative">
@@ -374,7 +320,6 @@
                 <button onclick="switchTab('more')" id="tab-more" class="flex-1 py-3 text-sm font-black text-slate-500 btn-active">更多功能</button>
             </div>
 
-            <!-- 數字鍵盤內容 (提升互動權限並強化點擊) -->
             <div id="content-numpad" class="flex-1 grid grid-cols-4 gap-3 overflow-visible pb-4 relative z-[130]">
                 <div class="col-span-3 grid grid-cols-3 gap-3">
                     <button onclick="pressBarcodeKey('7')" class="bg-slate-50 rounded-[1.25rem] shadow-sm border border-slate-200 font-black text-3xl text-slate-800 btn-active py-4">7</button>
@@ -405,14 +350,6 @@
                     <span class="w-10 h-10 rounded-full bg-orange-100 text-orange-400 flex items-center justify-center text-lg mb-1"><i class="fa-solid fa-egg"></i></span>
                     <span class="text-[10px] font-black text-slate-800 text-center leading-tight">茶葉蛋</span>
                 </button>
-                <button class="bg-slate-50 border border-slate-200 rounded-[1.25rem] p-3 flex flex-col items-center justify-center btn-active shadow-sm">
-                    <span class="w-10 h-10 rounded-full bg-amber-100 text-amber-400 flex items-center justify-center text-lg mb-1"><i class="fa-solid fa-fire"></i></span>
-                    <span class="text-[10px] font-black text-slate-800 text-center leading-tight">烤番薯</span>
-                </button>
-                <button class="bg-slate-50 border border-slate-200 rounded-[1.25rem] p-3 flex flex-col items-center justify-center btn-active shadow-sm">
-                    <span class="w-10 h-10 rounded-full bg-blue-100 text-blue-400 flex items-center justify-center text-lg mb-1"><i class="fa-solid fa-bag-shopping"></i></span>
-                    <span class="text-[10px] font-black text-slate-800 text-center leading-tight">提袋</span>
-                </button>
                 <button class="bg-slate-50 border border-slate-200 rounded-[1.25rem] p-3 flex flex-col items-center justify-center btn-active shadow-sm text-slate-300">
                     <i class="fa-solid fa-plus text-xl"></i>
                 </button>
@@ -420,7 +357,7 @@
         </div>
     </div>
 
-    <!-- 付款選單 Modal -->
+    <!-- 付款與現金 Modal -->
     <div id="paymentModalOverlay" class="modal-overlay" onclick="closeModal('paymentModal')"></div>
     <div id="paymentModalDrawer" class="modal-drawer">
         <div class="p-6 flex justify-between items-center border-b border-slate-100">
@@ -432,41 +369,41 @@
                 <div class="absolute -right-4 -top-4 w-32 h-32 bg-pay-500/10 rounded-full blur-3xl"></div>
                 <div class="flex flex-col relative z-10">
                     <span class="text-[10px] text-slate-500 font-black mb-2">應收總額 Total</span>
-                    <span class="text-6xl font-black text-pay-500 leading-none tracking-tighter">$ 350</span>
+                    <span id="pay-modal-total" class="text-6xl font-black text-pay-500 leading-none tracking-tighter">$ 285</span>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-5">
                 <button onclick="openCashPayment()" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm">
                     <div class="w-16 h-16 rounded-full bg-pay-50 text-pay-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-money-bill-wave"></i></div>
-                    <span class="font-black text-slate-800 text-lg uppercase mt-2">現金</span>
+                    <span class="font-black text-slate-800 text-lg mt-2 uppercase">現金</span>
                 </button>
                 <button onclick="selectPayment('信用卡')" class="bg-white border-2 border-slate-100 p-8 rounded-[2.5rem] flex flex-col items-center gap-4 btn-active shadow-sm">
                     <div class="w-16 h-16 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-credit-card"></i></div>
-                    <span class="font-black text-slate-800 text-lg uppercase mt-2">刷卡</span>
+                    <span class="font-black text-slate-800 text-lg mt-2 uppercase">刷卡</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 現金收銀 Modal (修復跑版與長文字問題) -->
+    <!-- 現金 Modal -->
     <div id="cashPaymentOverlay" class="modal-overlay" onclick="closeModal('cashPayment')"></div>
     <div id="cashPaymentDrawer" class="modal-drawer">
         <div class="p-6 flex justify-between items-center border-b border-slate-100">
             <button onclick="closeModal('cashPayment'); openModal('paymentModal')" class="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-chevron-left text-lg"></i></button>
-            <h3 class="font-black text-slate-900 text-xl tracking-tight uppercase">現金收銀</h3>
+            <h3 class="font-black text-slate-900 text-xl uppercase">現金收銀</h3>
             <button onclick="closeModal('cashPayment')" class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 btn-active"><i class="fa-solid fa-xmark text-xl"></i></button>
         </div>
         <div class="flex-1 overflow-y-auto p-6 space-y-6">
             <div class="flex justify-between items-center px-4">
                 <span class="text-slate-400 font-bold uppercase text-xs">應付金額</span>
-                <span class="text-4xl font-black text-slate-900">$ 350</span>
+                <span id="cash-modal-required" class="text-4xl font-black text-slate-900">$ 285</span>
             </div>
             
             <div class="bg-slate-50 rounded-[2.5rem] p-8 border-2 border-slate-100 space-y-4 shadow-inner relative overflow-hidden">
                 <div class="flex flex-wrap justify-between items-center gap-2">
                     <span class="text-brand-600 font-black text-base uppercase shrink-0">實收現金</span>
                     <div class="flex items-center gap-1 flex-1 justify-end min-w-0">
-                        <span class="text-2xl font-black text-slate-300 tracking-tighter">$</span>
+                        <span class="text-2xl font-black text-slate-300">$</span>
                         <input id="cash-received-input" type="text" readonly class="bg-transparent text-5xl font-black text-brand-600 text-right w-full max-w-[180px] outline-none tracking-tighter" value="0">
                     </div>
                 </div>
@@ -476,11 +413,6 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-3">
-                <button onclick="setCashAmount(100)" class="py-5 bg-white border-2 border-slate-100 rounded-3xl font-black text-slate-700 btn-active shadow-sm text-lg">$ 100</button>
-                <button onclick="setCashAmount(500)" class="py-5 bg-white border-2 border-slate-100 rounded-3xl font-black text-slate-700 btn-active shadow-sm text-lg">$ 500</button>
-                <button onclick="setCashAmount(1000)" class="py-5 bg-white border-2 border-slate-100 rounded-3xl font-black text-slate-700 btn-active shadow-sm text-lg">$ 1000</button>
-            </div>
             <div class="grid grid-cols-3 gap-3 pb-8">
                 <button onclick="pressCashKey('7')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">7</button>
                 <button onclick="pressCashKey('8')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">8</button>
@@ -493,7 +425,7 @@
                 <button onclick="pressCashKey('3')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">3</button>
                 <button onclick="pressCashKey('0')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">0</button>
                 <button onclick="pressCashKey('00')" class="h-16 bg-slate-100 rounded-[1.25rem] font-black text-2xl text-slate-800 btn-active py-4">00</button>
-                <button onclick="clearCashInput()" class="h-16 bg-slate-300 rounded-[1.25rem] font-black text-sm text-slate-900 btn-active uppercase tracking-tighter">清除</button>
+                <button onclick="clearCashInput()" class="h-16 bg-slate-300 rounded-[1.25rem] font-black text-sm text-slate-900 btn-active uppercase">清除</button>
             </div>
         </div>
         <div class="p-8 border-t border-slate-100 bg-slate-50">
@@ -524,7 +456,7 @@
             </div>
         </div>
         <div class="p-10 mt-auto">
-            <button onclick="showToast('會員已成功登錄：王大同'); closeModal('vipModal')" class="w-full bg-amber-500 text-white h-24 rounded-[2.5rem] font-black text-3xl shadow-xl shadow-amber-500/30 btn-active border-b-4 border-amber-600 transition-all">
+            <button onclick="showToast('會員已成功登錄'); closeModal('vipModal')" class="w-full bg-amber-500 text-white h-24 rounded-[2.5rem] font-black text-3xl shadow-xl shadow-amber-500/30 btn-active border-b-4 border-amber-600 transition-all">
                 確認會員身分
             </button>
         </div>
@@ -538,24 +470,49 @@
         document.getElementById('header-time').innerText = now.toLocaleTimeString('en-GB', { hour12: false });
     }, 1000);
 
-    // 隱藏更新功能邏輯：從 V1.0 刷新成 V1.1
-    function triggerHiddenUpdate() {
-        showToast("正在檢查更新系統版本...");
+    // 模擬 F5 重新整理功能邏輯
+    function triggerF5Refresh() {
+        const container = document.getElementById('main-container');
         const versionEl = document.getElementById('app-version');
         const ksLogo = document.getElementById('ks-logo');
         
-        // 觸發視覺提示
+        // 1. 顯示重新整理 Toast
+        showToast("系統重新整理中...", true);
+        
+        // 2. 觸發畫面閃爍與 Logo 動效
+        container.classList.add('refreshing');
         ksLogo.classList.add('ring-4', 'ring-white', 'scale-110');
         
         setTimeout(() => {
-            versionEl.innerText = "V1.1";
+            // 3. 刷新版本號至 v1.35
+            versionEl.innerText = "v1.35";
             versionEl.classList.add('flash-update');
-            showToast("系統已成功更新至最新版本：V1.1");
+            
+            // 4. 重設購物車狀態 (清空清單)
+            document.getElementById('cart-list').innerHTML = `
+                <div class="h-96 flex flex-col items-center justify-center text-slate-300 opacity-60">
+                    <div class="w-32 h-32 rounded-[3rem] bg-slate-200 text-slate-400 flex items-center justify-center text-5xl mb-8 shadow-inner">
+                        <i class="fa-solid fa-rotate"></i>
+                    </div>
+                    <p class="font-black text-2xl tracking-[0.2em]">系統已重新整理</p>
+                    <p class="text-xs font-bold mt-4 uppercase text-slate-400 tracking-widest">Awaiting new transaction</p>
+                </div>
+            `;
+            
+            // 5. 重設應付金額
+            document.getElementById('sheet-items-count').innerText = "0";
+            document.getElementById('sheet-discount').innerText = "-$0";
+            document.getElementById('sheet-gross').innerText = "$0";
+            document.getElementById('sheet-total').innerText = "$ 0";
+            
+            // 6. 移除動效
+            container.classList.remove('refreshing');
             ksLogo.classList.remove('ring-4', 'ring-white', 'scale-110');
-        }, 1500);
+            
+            showToast("系統已重整至最新版本 v1.35");
+        }, 800);
     }
 
-    const TOTAL_AMOUNT = 350;
     let isExpanded = false;
     const sheet = document.getElementById('bottomSheet');
     const sheetOverlay = document.getElementById('sheetOverlay');
@@ -569,7 +526,6 @@
             sheet.classList.add('expanded');
             sheetOverlay.classList.add('active');
             sheet.style.zIndex = "150"; 
-            // 強制重繪以修復移動端渲染問題
             sheet.style.display = 'none';
             sheet.offsetHeight; 
             sheet.style.display = 'flex';
@@ -601,24 +557,19 @@
         cashInputField.value = current + key;
         updateChange();
     }
-    function setCashAmount(amount) {
-        cashInputField.value = amount;
-        updateChange();
-    }
     function clearCashInput() {
         cashInputField.value = "0";
         updateChange();
     }
     function updateChange() {
         let received = parseInt(cashInputField.value) || 0;
-        let change = received - TOTAL_AMOUNT;
+        let change = received - 285;
         cashChangeDisplay.innerText = `$ ${Math.max(0, change)}`;
         cashChangeDisplay.style.opacity = change < 0 ? "0.2" : "1";
     }
 
     function switchTab(tab) {
-        const tabs = ['numpad', 'quick', 'more'];
-        tabs.forEach(t => {
+        ['numpad', 'quick', 'more'].forEach(t => {
             const btn = document.getElementById(`tab-${t}`);
             const content = document.getElementById(`content-${t}`);
             if(t === tab) {
@@ -647,11 +598,19 @@
         showToast(`數量更新為：${current}`);
     }
 
-    function showToast(msg) {
+    function showToast(msg, loading = false) {
         const toast = document.getElementById('toast');
+        const icon = document.getElementById('toast-icon');
         document.getElementById('toast-msg').innerText = msg;
+        
+        if(loading) {
+            icon.className = "fa-solid fa-circle-notch fa-spin text-brand-500";
+        } else {
+            icon.className = "fa-solid fa-circle-check text-pay-500";
+        }
+
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2000);
+        if(!loading) setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
     function openModal(type) {
@@ -675,7 +634,7 @@
 
     function confirmPayment() {
         let received = parseInt(cashInputField.value) || 0;
-        if(received < TOTAL_AMOUNT) {
+        if(received < 285) {
             showToast('實收金額不足');
             return;
         }
